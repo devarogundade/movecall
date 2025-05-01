@@ -6,11 +6,13 @@ import {
   SignedTokenTransferEVM,
   SignedTokenTransferIOTA,
 } from "./token-bridge";
+import { MessageBridge } from "./message-bridge";
 
 const api = axios.create({ baseURL: Config.nodeUrl() });
 
 const eventSigner = new EventSigner();
 const tokenBridge = new TokenBridge();
+const messageBridge = new MessageBridge();
 
 tokenBridge.syncHolesky(async (events) => {
   try {

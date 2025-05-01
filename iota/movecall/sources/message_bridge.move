@@ -33,7 +33,6 @@ module movecall::message_bridge {
     public struct MessageSent has copy, drop {
         uid: vector<u8>,
         to_chain: u64,
-        block_number: u64,
         to: vector<u8>,
         payload: vector<u8>
     }
@@ -41,7 +40,6 @@ module movecall::message_bridge {
     public struct MessageReceived has copy, drop {
         uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         from: vector<u8>,
         to: address
     }
@@ -83,7 +81,6 @@ module movecall::message_bridge {
         event::emit(MessageSent {
             uid,
             to_chain,
-            block_number: tx_context::epoch(ctx),
             to,
             payload
         });
@@ -97,7 +94,6 @@ module movecall::message_bridge {
         bridge: &mut MessageBridge,
         source_uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         from: vector<u8>,
         to: address,
         _: vector<u8>,
@@ -114,7 +110,6 @@ module movecall::message_bridge {
         event::emit(MessageReceived {
             uid: source_uid,
             source_chain,
-            source_block_number,
             from,
             to
         });

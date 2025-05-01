@@ -105,13 +105,12 @@ module movecall::token_bridge {
         coin_metadata: &coin::CoinMetadata<CoinType>,
         source_uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         amount: u64,
         decimals: u8,
         receiver: address,
         ctx: &mut TxContext
     ) {
-        let claim_root = get_claim_root(source_uid, source_chain, source_block_number, amount, decimals, receiver);
+        let claim_root = get_claim_root(source_uid, source_chain, amount, decimals, receiver);
 
         if (!table::contains(&bridge.claimeds, claim_root)) {
             table::add(&mut bridge.claimeds, claim_root, false);
@@ -182,7 +181,6 @@ module movecall::token_bridge {
     public fun get_claim_root(
         source_uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         amount: u64,
         decimals: u8,
         receiver: address
@@ -190,7 +188,6 @@ module movecall::token_bridge {
         let mut root = vector::empty<u8>();
         vector::append(&mut root, source_uid);
         vector::append(&mut root, bcs::to_bytes(&source_chain));
-        vector::append(&mut root, bcs::to_bytes(&source_block_number));
         vector::append(&mut root, bcs::to_bytes(&amount));
         vector::append(&mut root, bcs::to_bytes(&decimals));
         vector::append(&mut root, bcs::to_bytes(&receiver));

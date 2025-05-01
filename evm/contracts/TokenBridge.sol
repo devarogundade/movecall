@@ -10,7 +10,6 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 contract TokenBridge is Ownable, ITokenBridge {
     uint256 internal _nonce;
     address internal _moveCall;
-    mapping(address => string) internal _coinTypes;
     mapping(bytes32 => bool) internal _claimeds;
 
     constructor(address moveCall_) Ownable(msg.sender) {
@@ -23,24 +22,17 @@ contract TokenBridge is Ownable, ITokenBridge {
         address token,
         uint256 amount,
         bytes32 receiver
-    ) external override {
+    ) external override returns (bytes32 uid) {
         uint8 decimals = IERC20Metadata(token).decimals();
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 
-        _tokenTranfer(token, amount, receiver, decimals);
+        return _tokenTranfer(token, amount, receiver, decimals);
     }
 
-    function tokenTranferETH(bytes32 receiver) external payable override {
-        _tokenTranfer(address(0), msg.value, receiver, 18);
-    }
-
-    // ========== Admin Functions ========== //
-
-    function setCoinType(
-        address token,
-        string memory coinType
-    ) external onlyOwner {
-        _coinTypes[token] = coinType;
+    function tokenTranferETH(
+        bytes32 receiver
+    ) external payable override returns (bytes32 uid) {
+        return _tokenTranfer(address(0), msg.value, receiver, 18);
     }
 
     // ========== Package Functions ========== //
@@ -50,15 +42,13 @@ contract TokenBridge is Ownable, ITokenBridge {
         bytes32 sourceUid,
         uint64 sourceChain,
         address token,
-        uint256 amount,
         uint8 decimals,
+        uint256 amount,
         address receiver
     ) external override onlyMoveCall {
         uint8 tokenDecimals = token == address(0)
             ? 18
             : IERC20Metadata(token).decimals();
-
-        uint256 amountClaimed = MathLib.scale(amount, decimals, tokenDecimals);
 
         bytes32 claimRoot = getClaimRoot(
             sourceUid,
@@ -69,6 +59,8 @@ contract TokenBridge is Ownable, ITokenBridge {
         );
 
         require(!_claimeds[claimRoot], "ALREADY_CLAIMED");
+
+        uint256 amountClaimed = MathLib.scale(amount, decimals, tokenDecimals);
 
         if (token == address(0)) {
             payable(receiver).transfer(amountClaimed);
@@ -81,8 +73,8 @@ contract TokenBridge is Ownable, ITokenBridge {
             sourceUid,
             sourceChain,
             token,
-            amount,
             decimals,
+            amount,
             receiver
         );
 
@@ -93,10 +85,6 @@ contract TokenBridge is Ownable, ITokenBridge {
 
     function getNonce() external view returns (uint256) {
         return _nonce;
-    }
-
-    function getCoinType(address token) external view returns (string memory) {
-        return _coinTypes[token];
     }
 
     function getClaimRoot(
@@ -119,14 +107,11 @@ contract TokenBridge is Ownable, ITokenBridge {
         uint256 amount,
         bytes32 receiver,
         uint8 decimals
-    ) internal {
-        emit TokenTransfer(
-            _getUID(token, amount, receiver),
-            _coinTypes[token],
-            decimals,
-            amount,
-            receiver
-        );
+    ) internal returns (bytes32 uid) {
+        uid = _getUID(token, amount, receiver);
+
+        emit TokenTransfer(uid, token, decimals, amount, receiver);
+
         _nonce = _nonce + 1;
     }
 

@@ -1,0 +1,3 @@
+class MessageBridge {}
+
+export { MessageBridge };

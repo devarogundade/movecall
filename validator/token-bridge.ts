@@ -6,7 +6,7 @@ import RangeTime from "./range-time";
 
 interface TokenTransferEVM {
   uid: Hex;
-  coinType: string;
+  token: string;
   decimals: number;
   amount: bigint;
   receiver: Hex;
@@ -59,7 +59,7 @@ class TokenBridge {
       address: Config.tokenBrige(17_000),
       fromBlock,
       event: parseAbiItem(
-        "event TokenTransfer(bytes32 indexed uid, string coinType, uint256 decimals, uint256 amount, bytes32 receiver)"
+        "event TokenTransfer(bytes32 indexed uid, address token, uint256 decimals, uint256 amount, bytes32 receiver)"
       ),
       pollingInterval: Config.HOLESKY_EVENT_INTERVAL_MS,
       onLogs: (events) => {
@@ -67,7 +67,7 @@ class TokenBridge {
           events.map((event) => {
             return {
               uid: event.args.uid!,
-              coinType: event.args.coinType!,
+              token: event.args.token!,
               decimals: Number(event.args.decimals!),
               amount: event.args.amount!,
               receiver: event.args.receiver!,

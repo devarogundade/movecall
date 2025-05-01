@@ -123,7 +123,6 @@ module movecall::movecall {
         signatures: vector<vector<u8>>,
         source_uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         from: vector<u8>,
         to: address,
         payload: vector<u8>,
@@ -134,8 +133,7 @@ module movecall::movecall {
         message_bridge::receive_message(
             bridge,
             source_uid,
-            source_chain,
-            source_block_number,
+            source_chain
             from,
             to,
             payload,
@@ -152,7 +150,6 @@ module movecall::movecall {
         signatures: vector<vector<u8>>,
         source_uid: vector<u8>,
         source_chain: u64,
-        source_block_number: u64,
         amount: u64,
         decimals: u8,
         receiver: address,
@@ -165,7 +162,6 @@ module movecall::movecall {
             coin_metadata,
             source_uid,
             source_chain,
-            source_block_number,
             amount,
             decimals,
             receiver,
