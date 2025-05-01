@@ -49,7 +49,6 @@ contract TokenBridge is Ownable, ITokenBridge {
         bytes32 offChainSignatureId,
         bytes32 sourceUid,
         uint64 sourceChain,
-        uint256 sourceBlockNumber,
         address token,
         uint256 amount,
         uint8 decimals,
@@ -64,7 +63,6 @@ contract TokenBridge is Ownable, ITokenBridge {
         bytes32 claimRoot = getClaimRoot(
             sourceUid,
             sourceChain,
-            sourceBlockNumber,
             amount,
             decimals,
             receiver
@@ -82,7 +80,6 @@ contract TokenBridge is Ownable, ITokenBridge {
             offChainSignatureId,
             sourceUid,
             sourceChain,
-            sourceBlockNumber,
             token,
             amount,
             decimals,
@@ -105,21 +102,13 @@ contract TokenBridge is Ownable, ITokenBridge {
     function getClaimRoot(
         bytes32 sourceUid,
         uint64 sourceChain,
-        uint256 sourceBlockNumber,
         uint256 amount,
         uint8 decimals,
         address receiver
     ) public pure returns (bytes32) {
         return
             keccak256(
-                abi.encode(
-                    sourceUid,
-                    sourceChain,
-                    sourceBlockNumber,
-                    amount,
-                    decimals,
-                    receiver
-                )
+                abi.encode(sourceUid, sourceChain, amount, decimals, receiver)
             );
     }
 

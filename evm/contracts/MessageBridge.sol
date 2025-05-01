@@ -28,7 +28,7 @@ contract MessageBridge is Ownable, IMessageBridge {
 
         uid = _getUID(_msgSender());
 
-        emit MessageSent(uid, toChain, block.number, to, payload);
+        emit MessageSent(uid, toChain, to, payload);
 
         _nonce = _nonce + 1;
     }
@@ -37,7 +37,6 @@ contract MessageBridge is Ownable, IMessageBridge {
         bytes32 offChainSignatureId,
         bytes32 sourceUid,
         uint64 sourceChain,
-        uint256 sourceBlockNumber,
         bytes32 from,
         address to,
         bytes memory payload
@@ -50,7 +49,6 @@ contract MessageBridge is Ownable, IMessageBridge {
             offChainSignatureId,
             sourceUid,
             sourceChain,
-            sourceBlockNumber,
             from,
             to
         );

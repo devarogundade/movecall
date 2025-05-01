@@ -15,16 +15,14 @@ contract MoveCall is Ownable {
         bytes32 offChainSignatureId,
         bytes32 sourceUid,
         uint64 sourceChain,
-        uint256 sourceBlockNumber,
-        bytes memory payload,
         bytes32 from,
-        address to
+        address to,
+        bytes memory payload
     ) external onlyOwner {
         _messageBridge.receiveMessage(
             offChainSignatureId,
             sourceUid,
             sourceChain,
-            sourceBlockNumber,
             from,
             to,
             payload
@@ -35,7 +33,6 @@ contract MoveCall is Ownable {
         bytes32 offChainSignatureId,
         bytes32 sourceUid,
         uint64 sourceChain,
-        uint256 sourceBlockNumber,
         address token,
         uint256 amount,
         uint8 decimals,
@@ -45,7 +42,6 @@ contract MoveCall is Ownable {
             offChainSignatureId,
             sourceUid,
             sourceChain,
-            sourceBlockNumber,
             token,
             amount,
             decimals,

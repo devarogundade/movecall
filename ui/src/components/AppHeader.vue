@@ -44,9 +44,8 @@ onMounted(() => {
                             <button :class="route.name === 'token-bridge' ? 'tab tab_active' : 'tab'">Token
                                 Bridge</button>
                         </RouterLink>
-                        <RouterLink to="/name-service-bridge">
-                            <button :class="route.name === 'name-service-bridge' ? 'tab tab_active' : 'tab'">Name
-                                Service
+                        <RouterLink to="/message-bridge">
+                            <button :class="route.name === 'message-bridge' ? 'tab tab_active' : 'tab'">Message
                                 Bridge</button>
                         </RouterLink>
                         <RouterLink to="/stake">

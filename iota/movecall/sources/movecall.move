@@ -14,6 +14,7 @@ module movecall::movecall {
     use movecall::math;
     use movecall::utils;
     use movecall::token_bridge::{Self, TokenBridge};
+    use movecall::message_bridge::{Self, MessageBridge};
 
     // Constants
     // BPS is the basis points for the multipliers of the coins in the quorum
@@ -104,25 +105,47 @@ module movecall::movecall {
         *prev_stake_vault_balance = *prev_stake_vault_balance + amount_staked;
     }
 
+    public entry fun unstake<CoinType>(
+        move_call: &mut MoveCall,
+        amount_unstake: u64,
+        ctx: &mut TxContext
+    ) {
+
+    }
+
     // ========== Admin Functions ========== //
 
     public entry fun attest_message(
         _: &MoveCallCap,
+        move_call: &MoveCall,
+        bridge: &mut MessageBridge,
+        validators: vector<address>,
+        signatures: vector<vector<u8>>,
+        source_uid: vector<u8>,
+        source_chain: u64,
+        source_block_number: u64,
+        from: vector<u8>,
+        to: address,
+        payload: vector<u8>,
         ctx: &mut TxContext
     ) {
+        validate_attest(move_call, validators, signatures, source_uid);
 
-    }
-
-    public entry fun attest_ns_claim(
-        _: &MoveCallCap,
-        ctx: &mut TxContext
-    ) {
-        
-    }
+        message_bridge::receive_message(
+            bridge,
+            source_uid,
+            source_chain,
+            source_block_number,
+            from,
+            to,
+            payload,
+            ctx
+        );
+    }   
 
     public entry fun attest_token_claim<CoinType>(
         _: &MoveCallCap,
-        move_call: &mut MoveCall,
+        move_call: &MoveCall,
         bridge: &mut TokenBridge,
         coin_metadata: &coin::CoinMetadata<CoinType>,
         validators: vector<address>,
@@ -135,33 +158,7 @@ module movecall::movecall {
         receiver: address,
         ctx: &mut TxContext
     ) {
-        let mut i = 0;
-        let len = vector::length(&signatures);
-
-        let mut cumm_weight_attested = 0;
-        let mut attest_validators = vector::empty<address>();
-
-        let cumm_weight = get_cumm_weight(move_call);
-
-        while (i < len) {
-            let validator = *vector::borrow(&validators, i);
-            let signature = *vector::borrow(&signatures, i);
-
-            // Check if the claim is already attested by validator
-            assert!(!vector::contains(&attest_validators, &validator), E_ALREADY_ATTESTED);
-            
-            if (!ed25519::ed25519_verify(&signature, &bcs::to_bytes(&validator), &source_uid)) continue;
-
-            let validator_weight = get_validator_weight(move_call, validator);
-            if (validator_weight < move_call.min_weight) continue;
-
-            cumm_weight_attested = cumm_weight_attested + validator_weight;
-            vector::push_back(&mut attest_validators, validator);           
-
-            i = i + 1;
-        };
-        
-        assert!(cumm_weight_attested > math::mul_div(cumm_weight, 10, 4), E_INSUFICCIENT_CUMM_WEIGHT);
+        validate_attest(move_call, validators, signatures, source_uid);
 
         token_bridge::attest_token_claim<CoinType>(
             bridge,
@@ -303,6 +300,41 @@ module movecall::movecall {
     }
 
     // ========== Private Functions ========== //
+
+    fun validate_attest(
+        move_call: &MoveCall,
+        validators: vector<address>,
+        signatures: vector<vector<u8>>,
+        source_uid: vector<u8>
+    ) {
+        let mut i = 0;
+        let len = vector::length(&signatures);
+
+        let mut cumm_weight_attested = 0;
+        let mut attest_validators = vector::empty<address>();
+
+        let cumm_weight = get_cumm_weight(move_call);
+
+        while (i < len) {
+            let validator = *vector::borrow(&validators, i);
+            let signature = *vector::borrow(&signatures, i);
+
+            // Check if the claim is already attested by validator
+            assert!(!vector::contains(&attest_validators, &validator), E_ALREADY_ATTESTED);
+            
+            if (!ed25519::ed25519_verify(&signature, &bcs::to_bytes(&validator), &source_uid)) continue;
+
+            let validator_weight = get_validator_weight(move_call, validator);
+            if (validator_weight < move_call.min_weight) continue;
+
+            cumm_weight_attested = cumm_weight_attested + validator_weight;
+            vector::push_back(&mut attest_validators, validator);           
+
+            i = i + 1;
+        };
+        
+        assert!(cumm_weight_attested > math::mul_div(cumm_weight, 10, 4), E_INSUFICCIENT_CUMM_WEIGHT);
+    }
 
     fun validate_quorum(
         quorum: Quorum,
