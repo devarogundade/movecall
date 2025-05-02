@@ -1,12 +1,13 @@
 import { config } from "./config";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import type { Hex } from "viem";
+import { parseEther, type Hex } from "viem";
 import { tokenBridgeAbi } from "../abis/tokenBridge";
 import { messageBridgeAbi } from "../abis/messageBridge";
 import type { NightlyConnectIotaAdapter } from "@nightlylabs/wallet-selector-iota";
 import { Transaction } from "@iota/iota-sdk/transactions";
 import { bcs } from "@iota/iota-sdk/bcs";
 import { CoinContract } from "./erc20";
+import { IOTA_TYPE_ARG } from "@iota/iota-sdk/utils";
 
 const HoleskyContract = {
   tokenBridge: "0x" as Hex,
@@ -71,6 +72,7 @@ const HoleskyContract = {
         address: this.messageBridge,
         functionName: "sendMessage",
         args: [toChain, to, payload],
+        value: parseEther("0.001"),
       });
 
       const receipt = await waitForTransactionReceipt(config, {
@@ -85,8 +87,9 @@ const HoleskyContract = {
 };
 
 const IOTAContract = {
-  address: "0x" as Hex,
-  state: "0x" as Hex,
+  package: "0x" as Hex,
+  tokenBridge: "0x" as Hex,
+  messageBridge: "0x" as Hex,
 
   async transferToken(
     adapter: NightlyConnectIotaAdapter,
@@ -101,30 +104,78 @@ const IOTAContract = {
     try {
       const transaction = new Transaction();
 
-      const coins = await CoinContract.getCoins(accounts[0].address, coinType);
-      const coinsObject = coins.map((coin) => coin.coinObjectId);
+      let coinTransfer;
 
-      if (coinsObject.length === 0) return null;
-      const destinationInCoin = coinsObject[0];
+      if (coinType === IOTA_TYPE_ARG) {
+        const [coinResult] = transaction.splitCoins(transaction.gas, [10_000]);
+        coinTransfer = coinResult;
+      } else {
+        const coins = await CoinContract.getCoins(
+          accounts[0].address,
+          coinType
+        );
+        const coinsObject = coins.map((coin) => coin.coinObjectId);
 
-      if (coinsObject.length > 1) {
-        const [, ...otherInCoins] = coinsObject;
-        transaction.mergeCoins(destinationInCoin, otherInCoins);
+        if (coinsObject.length === 0) return null;
+        const destinationInCoin = coinsObject[0];
+
+        if (coinsObject.length > 1) {
+          const [, ...otherInCoins] = coinsObject;
+          transaction.mergeCoins(destinationInCoin, otherInCoins);
+        }
+        const [coinResult] = transaction.splitCoins(destinationInCoin, [
+          transaction.pure.u64(amount),
+        ]);
+
+        coinTransfer = coinResult;
       }
-      const [coinTransfer] = transaction.splitCoins(destinationInCoin, [
-        transaction.pure.u64(amount),
-      ]);
 
       transaction.moveCall({
-        target: `${this.address}::token_bridge::token_tranfer`,
+        target: `${this.package}::token_bridge::token_tranfer`,
         arguments: [
-          transaction.object(this.state),
+          transaction.object(this.tokenBridge),
           transaction.object(coinTransfer),
           transaction.object(coinMetadata),
           transaction.pure.u64(toChain),
           bcs.vector(bcs.U8).serialize(new TextEncoder().encode(receiver)),
         ],
         typeArguments: [coinType],
+      });
+
+      const { digest } = await adapter.signAndExecuteTransaction({
+        transaction,
+        chain: "iota:testnet",
+        account: accounts[0],
+      });
+
+      return digest as Hex;
+    } catch (error) {
+      return null;
+    }
+  },
+
+  async sendMessage(
+    adapter: NightlyConnectIotaAdapter,
+    toChain: number,
+    to: Hex,
+    payload: Hex
+  ): Promise<Hex | null> {
+    const accounts = await adapter.getAccounts();
+    if (accounts.length === 0) return null;
+    try {
+      const transaction = new Transaction();
+
+      const [coinFee] = transaction.splitCoins(transaction.gas, [1_000_000]);
+
+      transaction.moveCall({
+        target: `${this.package}::message_bridge::send_message`,
+        arguments: [
+          transaction.object(this.messageBridge),
+          transaction.object(coinFee),
+          transaction.pure.u64(toChain),
+          bcs.vector(bcs.U8).serialize(new TextEncoder().encode(to)),
+          bcs.vector(bcs.U8).serialize(new TextEncoder().encode(payload)),
+        ],
       });
 
       const { digest } = await adapter.signAndExecuteTransaction({

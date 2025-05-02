@@ -6,7 +6,6 @@ import {ITokenBridge} from "./interfaces/ITokenBridge.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-
 contract TokenBridge is Ownable, ITokenBridge {
     uint256 internal _nonce;
     address internal _moveCall;
@@ -132,4 +131,6 @@ contract TokenBridge is Ownable, ITokenBridge {
         require(_msgSender() == _moveCall);
         _;
     }
+
+    receive() external payable {}
 }

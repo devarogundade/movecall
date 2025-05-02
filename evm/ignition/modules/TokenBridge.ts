@@ -2,34 +2,28 @@
 // Learn more about it at https://hardhat.org/ignition
 
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { zeroAddress } from "viem";
+import MoveCallModule from "./MoveCall";
 import TokenModule from "./Token";
-
-const MoveCall =
-  "0x7b941196e87bbf0f0ee85717c68f49ad88ef598b81943ff4bde11dfea5e1b9a4";
+import { parseUnits } from "viem";
 
 const TokenBridgeModule = buildModule("TokenBridgeModule", (m) => {
-  const tokenBridge = m.contract("TokenBridge");
-  const { sui, lbtc } = m.useModule(TokenModule);
+  const { moveCall } = m.useModule(MoveCallModule);
+  const { doge, btc, usdc, iota, link } = m.useModule(TokenModule);
 
-  m.call(tokenBridge, "setCoinType", [zeroAddress, `${MoveCall}::eth::ETH`], {
-    id: "ETH",
+  const tokenBridge = m.contract("TokenBridge", [moveCall]);
+
+  m.call(doge, "transfer", [tokenBridge, parseUnits("10000000000", 18)], {
+    id: "DOGE",
   });
-  m.call(tokenBridge, "setCoinType", [sui, `${MoveCall}::sui::IOTA`], {
+  m.call(btc, "transfer", [tokenBridge, parseUnits("1000", 8)], { id: "BTC" });
+  m.call(usdc, "transfer", [tokenBridge, parseUnits("1000000", 6)], {
+    id: "USDC",
+  });
+  m.call(iota, "transfer", [tokenBridge, parseUnits("10000000", 18)], {
     id: "IOTA",
   });
-  m.call(tokenBridge, "setCoinType", [lbtc, `${MoveCall}::lbtc::BTC`], {
-    id: "BTC",
-  });
-
-  m.call(tokenBridge, "setCoinType", [zeroAddress, `${MoveCall}::eth::ETH`], {
-    id: "ETH2",
-  });
-  m.call(tokenBridge, "setCoinType", [sui, `${MoveCall}::sui::IOTA`], {
-    id: "IOTA2",
-  });
-  m.call(tokenBridge, "setCoinType", [lbtc, `${MoveCall}::lbtc::BTC`], {
-    id: "BTC2",
+  m.call(link, "transfer", [tokenBridge, parseUnits("10000000", 18)], {
+    id: "LINK",
   });
 
   return { tokenBridge };
