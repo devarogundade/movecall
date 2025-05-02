@@ -3,7 +3,7 @@
 import OutIcon from '@/components/icons/OutIcon.vue';
 import { notify } from '@/reactives/notify';
 
-import { Contract } from '@/scripts/contract';
+import { HoleskyContract } from '@/scripts/contract';
 import { Converter } from '@/scripts/converter';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';

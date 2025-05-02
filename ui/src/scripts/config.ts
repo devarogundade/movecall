@@ -1,13 +1,27 @@
+import { getFullnodeUrl, IotaClient } from "@iota/iota-sdk/client";
 import { holesky } from "viem/chains";
 import { walletConnect } from "@wagmi/connectors";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
+import { NightlyConnectIotaAdapter } from "@nightlylabs/wallet-selector-iota";
+import { ref } from "vue";
 
 const metadata = {
-  name: "Token Bridge | MoveCall.",
-  description: "Token Bridge | MoveCall.",
-  url: "https://tokenBridge.deeplayr.xyz",
+  name: "App | MoveCall.",
+  description: "App | MoveCall.",
+  url: "https://movecall.netlify.app",
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
+
+const appMetadata = {
+  name: "App | MoveCall.",
+  description: "App | MoveCall.",
+  icon: "https://avatars.githubusercontent.com/u/37784886",
+  additionalInfo: "MoveCall",
+};
+
+export const iotaClient = new IotaClient({
+  url: getFullnodeUrl("testnet"),
+});
 
 export const chains = [holesky];
 
@@ -22,3 +36,15 @@ export const config = defaultWagmiConfig({
     }),
   ],
 });
+
+export const useAdapter = () => {
+  const adapter = ref<NightlyConnectIotaAdapter | null>(null);
+
+  const initAdapter = async () => {
+    adapter.value = await NightlyConnectIotaAdapter.build({
+      appMetadata,
+    });
+  };
+
+  return { adapter, initAdapter };
+};

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { config, chains } from '@/scripts/config';
+import { config, chains, useAdapter } from '@/scripts/config';
 import { useWalletStore } from '@/stores/wallet';
 import { createWeb3Modal } from '@web3modal/wagmi/vue';
 import { useWeb3Modal } from '@web3modal/wagmi/vue';
 import { watchAccount } from '@wagmi/core';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { Converter } from '@/scripts/converter';
 import { useRoute } from 'vue-router';
 
@@ -20,12 +20,32 @@ createWeb3Modal({
 const route = useRoute();
 const modal = useWeb3Modal();
 const walletStore = useWalletStore();
+const { adapter, initAdapter } = useAdapter();
+
+watch(adapter, (newAdapter) => {
+    newAdapter?.on('connect', (accounts) => {
+        if (accounts.length > 0) {
+            walletStore.setIotaAddress(accounts[0].address);
+        }
+    });
+
+    newAdapter?.on('change', (adapter) => {
+        if (adapter.accounts?.length) {
+            walletStore.setIotaAddress(adapter.accounts?.[0].address);
+        }
+    });
+
+    newAdapter?.on('disconnect', () => {
+        walletStore.setIotaAddress(null);
+    });
+});
 
 onMounted(() => {
+    initAdapter();
     watchAccount(config, {
         onChange(account) {
             if (account.address) {
-                walletStore.setAddress(account.address);
+                walletStore.setHoleskyAddress(account.address);
             }
         },
     });
@@ -60,7 +80,17 @@ onMounted(() => {
 
                 <div class="actions">
                     <button @click="modal.open()">
-                        {{ walletStore.address ? Converter.trimAddress(walletStore.address, 4) : 'Connect' }}
+                        {{ walletStore.holeskyAddress ?
+                            Converter.trimAddress(walletStore.holeskyAddress, 4) :
+                            'Connect to Holesky'
+                        }}
+                    </button>
+
+                    <button @click="adapter?.connect()">
+                        {{ walletStore.iotaAddress ?
+                            Converter.trimAddress(walletStore.iotaAddress, 4) :
+                            'Connect to IOTA'
+                        }}
                     </button>
                 </div>
             </header>
@@ -81,7 +111,7 @@ header {
     height: 70px;
     display: grid;
     align-items: center;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
     gap: 40px;
 }
 

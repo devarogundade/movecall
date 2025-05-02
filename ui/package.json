@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@nightlylabs/wallet-selector-iota": "^0.1.0",
     "@wagmi/connectors": "^5.7.12",
     "@wagmi/core": "^2.16.7",
     "@web3modal/wagmi": "^5.1.11",

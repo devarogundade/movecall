@@ -1,4 +1,4 @@
-import { config } from "./config";
+import { config, iotaClient } from "./config";
 import {
   waitForTransactionReceipt,
   getBalance,
@@ -7,6 +7,7 @@ import {
 } from "@wagmi/core";
 import { erc20Abi, parseEther, zeroAddress, zeroHash, type Hex } from "viem";
 import { tokenAbi } from "../abis/token";
+import { type CoinStruct } from "@iota/iota-sdk/client";
 
 const TokenContract = {
   async mint(token: Hex, amount: bigint): Promise<Hex | null> {
@@ -78,4 +79,25 @@ const TokenContract = {
   },
 };
 
-export { TokenContract };
+const CoinContract = {
+  async getCoinBalance(coinType: string, owner: string): Promise<bigint> {
+    try {
+      const coins = await iotaClient.getAllCoins({ owner });
+      const innerCoins = coins.data.filter((coin) => coin.coinType == coinType);
+      return innerCoins.reduce((a, b) => a + BigInt(b.balance), BigInt(0));
+    } catch (error) {
+      return BigInt(0);
+    }
+  },
+
+  async getCoins(coinType: string, owner: string): Promise<CoinStruct[]> {
+    try {
+      const coins = await iotaClient.getCoins({ coinType, owner });
+      return coins.data;
+    } catch (error) {
+      return [];
+    }
+  },
+};
+
+export { TokenContract, CoinContract };
