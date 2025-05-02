@@ -21,18 +21,20 @@ contract TokenBridge is Ownable, ITokenBridge {
     function tokenTranfer(
         address token,
         uint256 amount,
+        uint64 toChain,
         bytes32 receiver
     ) external override returns (bytes32 uid) {
         uint8 decimals = IERC20Metadata(token).decimals();
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 
-        return _tokenTranfer(token, amount, receiver, decimals);
+        return _tokenTranfer(token, amount, toChain, receiver, decimals);
     }
 
     function tokenTranferETH(
+        uint64 toChain,
         bytes32 receiver
     ) external payable override returns (bytes32 uid) {
-        return _tokenTranfer(address(0), msg.value, receiver, 18);
+        return _tokenTranfer(address(0), msg.value, toChain, receiver, 18);
     }
 
     // ========== Package Functions ========== //
@@ -105,12 +107,13 @@ contract TokenBridge is Ownable, ITokenBridge {
     function _tokenTranfer(
         address token,
         uint256 amount,
+        uint64 toChain,
         bytes32 receiver,
         uint8 decimals
     ) internal returns (bytes32 uid) {
         uid = _getUID(token, amount, receiver);
 
-        emit TokenTransfer(uid, token, decimals, amount, receiver);
+        emit TokenTransfer(uid, token, decimals, amount, toChain, receiver);
 
         _nonce = _nonce + 1;
     }

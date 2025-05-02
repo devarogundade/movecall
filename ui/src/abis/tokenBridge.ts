@@ -1,6 +1,12 @@
 export const tokenBridgeAbi = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "moveCall_",
+        type: "address",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
@@ -49,6 +55,55 @@ export const tokenBridgeAbi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "bytes32",
+        name: "offChainSignatureId",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "sourceUid",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "sourceChain",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "decimals",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "receiver",
+        type: "address",
+      },
+    ],
+    name: "TokenClaimed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "bytes32",
         name: "uid",
@@ -56,9 +111,9 @@ export const tokenBridgeAbi = [
       },
       {
         indexed: false,
-        internalType: "string",
-        name: "coinType",
-        type: "string",
+        internalType: "address",
+        name: "token",
+        type: "address",
       },
       {
         indexed: false,
@@ -74,31 +129,100 @@ export const tokenBridgeAbi = [
       },
       {
         indexed: false,
+        internalType: "uint64",
+        name: "toChain",
+        type: "uint64",
+      },
+      {
+        indexed: false,
         internalType: "bytes32",
         name: "receiver",
         type: "bytes32",
       },
     ],
-    name: "TokenLocked",
+    name: "TokenTransfer",
     type: "event",
   },
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "offChainSignatureId",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "sourceUid",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint64",
+        name: "sourceChain",
+        type: "uint64",
+      },
+      {
         internalType: "address",
         name: "token",
         type: "address",
       },
-    ],
-    name: "getCoinType",
-    outputs: [
       {
-        internalType: "string",
-        name: "",
-        type: "string",
+        internalType: "uint8",
+        name: "decimals",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "receiver",
+        type: "address",
       },
     ],
-    stateMutability: "view",
+    name: "attestTokenClaim",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "sourceUid",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint64",
+        name: "sourceChain",
+        type: "uint64",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "decimals",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "receiver",
+        type: "address",
+      },
+    ],
+    name: "getClaimRoot",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
     type: "function",
   },
   {
@@ -112,42 +236,6 @@ export const tokenBridgeAbi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "receiver",
-        type: "bytes32",
-      },
-    ],
-    name: "tokenTransfer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "receiver",
-        type: "bytes32",
-      },
-    ],
-    name: "tokenTransferETH",
-    outputs: [],
-    stateMutability: "payable",
     type: "function",
   },
   {
@@ -178,14 +266,54 @@ export const tokenBridgeAbi = [
         type: "address",
       },
       {
-        internalType: "string",
-        name: "coinType",
-        type: "string",
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint64",
+        name: "toChain",
+        type: "uint64",
+      },
+      {
+        internalType: "bytes32",
+        name: "receiver",
+        type: "bytes32",
       },
     ],
-    name: "setCoinType",
-    outputs: [],
+    name: "tokenTranfer",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "uid",
+        type: "bytes32",
+      },
+    ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "toChain",
+        type: "uint64",
+      },
+      {
+        internalType: "bytes32",
+        name: "receiver",
+        type: "bytes32",
+      },
+    ],
+    name: "tokenTranferETH",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "uid",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "payable",
     type: "function",
   },
   {

@@ -7,6 +7,7 @@ interface ITokenBridge {
         address token,
         uint256 decimals,
         uint256 amount,
+        uint64 toChain,
         bytes32 receiver
     );
 
@@ -23,10 +24,12 @@ interface ITokenBridge {
     function tokenTranfer(
         address token,
         uint256 amount,
+        uint64 toChain,
         bytes32 receiver
     ) external returns (bytes32 uid);
 
     function tokenTranferETH(
+        uint64 toChain,
         bytes32 receiver
     ) external payable returns (bytes32 uid);
 

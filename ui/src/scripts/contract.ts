@@ -2,25 +2,28 @@ import { config } from "./config";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import type { Hex } from "viem";
 import { tokenBridgeAbi } from "../abis/tokenBridge";
+import { messageBridgeAbi } from "../abis/messageBridge";
 import type { NightlyConnectIotaAdapter } from "@nightlylabs/wallet-selector-iota";
 import { Transaction } from "@iota/iota-sdk/transactions";
 import { bcs } from "@iota/iota-sdk/bcs";
 import { CoinContract } from "./erc20";
 
 const HoleskyContract = {
-  address: "0x" as Hex,
+  tokenBridge: "0x" as Hex,
+  messageBridge: "0x" as Hex,
 
   async tokenTransfer(
     token: Hex,
     amount: bigint,
+    toChain: number,
     receiver: Hex
   ): Promise<Hex | null> {
     try {
       const result = await writeContract(config, {
         abi: tokenBridgeAbi,
-        address: this.address,
+        address: this.tokenBridge,
         functionName: "tokenTransfer",
-        args: [token, amount, receiver],
+        args: [token, amount, toChain, receiver],
       });
 
       const receipt = await waitForTransactionReceipt(config, {
@@ -33,13 +36,17 @@ const HoleskyContract = {
     }
   },
 
-  async tokenTransferETH(amount: bigint, receiver: Hex): Promise<Hex | null> {
+  async tokenTransferETH(
+    amount: bigint,
+    toChain: number,
+    receiver: Hex
+  ): Promise<Hex | null> {
     try {
       const result = await writeContract(config, {
         abi: tokenBridgeAbi,
-        address: this.address,
+        address: this.tokenBridge,
         functionName: "tokenTransferETH",
-        args: [receiver],
+        args: [toChain, receiver],
         value: amount,
       });
 
@@ -54,16 +61,16 @@ const HoleskyContract = {
   },
 
   async sendMessage(
-    token: Hex,
-    amount: bigint,
-    receiver: Hex
+    toChain: number,
+    to: Hex,
+    payload: Hex
   ): Promise<Hex | null> {
     try {
       const result = await writeContract(config, {
-        abi: tokenBridgeAbi,
-        address: this.address,
-        functionName: "tokenTransfer",
-        args: [token, amount, receiver],
+        abi: messageBridgeAbi,
+        address: this.messageBridge,
+        functionName: "sendMessage",
+        args: [toChain, to, payload],
       });
 
       const receipt = await waitForTransactionReceipt(config, {
@@ -83,10 +90,10 @@ const IOTAContract = {
 
   async transferToken(
     adapter: NightlyConnectIotaAdapter,
-    toChain: number,
     amount: bigint,
     coinType: string,
     coinMetadata: string,
+    toChain: number,
     receiver: string
   ): Promise<Hex | null> {
     const accounts = await adapter.getAccounts();

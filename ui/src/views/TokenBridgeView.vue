@@ -86,7 +86,7 @@ const approve = async () => {
 
     const tx = await TokenContract.approve(
         form.value.token.address[17000],
-        HoleskyContract.address,
+        HoleskyContract.tokenBridge,
         parseUnits(form.value.amount.toString(), form.value.token.decimals[17000]),
     );
 
@@ -140,12 +140,14 @@ const bridgeHolesky = async () => {
     if (form.value.token.address == zeroAddress) {
         tx = await HoleskyContract.tokenTransferETH(
             parseUnits(form.value.amount.toString(), form.value.token.decimals[17000]),
+            form.value.toChain.id,
             form.value.receiver as Hex,
         );
     } else {
         tx = await HoleskyContract.tokenTransfer(
             form.value.token.address[17000],
             parseUnits(form.value.amount.toString(), form.value.token.decimals[17000]),
+            form.value.toChain.id,
             form.value.receiver as Hex,
         );
     }
@@ -202,10 +204,10 @@ const bridgeIota = async () => {
 
     let tx: Hex | null = await IOTAContract.transferToken(
         adapter.value as any,
-        form.value.toChain.id,
         parseUnits(form.value.amount.toString(), form.value.token.decimals[0]),
         form.value.token.address[0],
         form.value.token.metadata[0],
+        form.value.toChain.id,
         form.value.receiver
     );
 
@@ -262,7 +264,7 @@ const getApprovals = async () => {
         const approval = await TokenContract.getAllowance(
             tokens[i].address[17000],
             walletStore.holeskyAddress,
-            HoleskyContract.address,
+            HoleskyContract.tokenBridge,
         );
 
         walletStore.setApproval(
@@ -325,7 +327,7 @@ watch(walletStore, () => {
                                 <div class="bal">
                                     <p>Bal: {{
                                         Converter.toMoney(walletStore.balances[form.token.address[form.fromChain.id]])
-                                    }} {{
+                                        }} {{
                                             form.token.symbol }}
                                     </p>
                                     <a href="https://cloud.google.com/application/web3/faucet/ethereum/holesky"

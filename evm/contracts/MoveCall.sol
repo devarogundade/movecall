@@ -43,8 +43,8 @@ contract MoveCall is Ownable {
             sourceUid,
             sourceChain,
             token,
-            amount,
             decimals,
+            amount,
             receiver
         );
     }
