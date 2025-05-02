@@ -133,7 +133,7 @@ module movecall::movecall {
         message_bridge::receive_message(
             bridge,
             source_uid,
-            source_chain
+            source_chain,
             from,
             to,
             payload,

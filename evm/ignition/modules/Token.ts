@@ -12,7 +12,7 @@ const TokenModule = buildModule("TokenModule", (m) => {
     id: "Token_BTC",
   });
   const usdc = m.contract("Token", ["USDC", "USDC", 6], {
-    id: "Token_BTC",
+    id: "Token_USDC",
   });
   const iota = m.contract("Token", ["IOTA", "IOTA", 18], { id: "Token_IOTA" });
   const link = m.contract("Token", ["Chainlink", "LINK", 18], {
