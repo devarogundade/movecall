@@ -62,7 +62,7 @@ const mint = async () => {
             description: `Minted ${form.value.token.symbol}`,
             category: 'success',
             linkTitle: 'View Trx',
-            linkUrl: `${import.meta.env.VITE_EXPLORER_URL}/tx/${tx}`,
+            linkUrl: `${import.meta.env.VITE_HOLESKY_EXPLORER_URL}/tx/${tx}`,
         });
 
         getBalances();
@@ -96,7 +96,7 @@ const approve = async () => {
             description: `Approved ${form.value.token.symbol}`,
             category: 'success',
             linkTitle: 'View Trx',
-            linkUrl: `${import.meta.env.VITE_EXPLORER_URL}/tx/${tx}`,
+            linkUrl: `${import.meta.env.VITE_HOLESKY_EXPLORER_URL}/tx/${tx}`,
         });
 
         getApprovals();
@@ -158,7 +158,7 @@ const bridgeHolesky = async () => {
             description: `Bridged ${form.value.token.symbol}`,
             category: 'success',
             linkTitle: 'View Trx',
-            linkUrl: `${import.meta.env.VITE_EXPLORER_URL}/tx/${tx}`,
+            linkUrl: `${import.meta.env.VITE_HOLESKY_EXPLORER_URL}/tx/${tx}`,
         });
 
         form.value.amount = undefined;
@@ -202,7 +202,7 @@ const bridgeIota = async () => {
 
     bridging.value = true;
 
-    let tx: Hex | null = await IOTAContract.transferToken(
+    let digext: Hex | null = await IOTAContract.transferToken(
         adapter.value as any,
         parseUnits(form.value.amount.toString(), form.value.token.decimals[0]),
         form.value.token.address[0],
@@ -211,13 +211,13 @@ const bridgeIota = async () => {
         form.value.receiver
     );
 
-    if (tx) {
+    if (digext) {
         notify.push({
             title: 'Bridged',
             description: `Bridged ${form.value.token.symbol}`,
             category: 'success',
             linkTitle: 'View Trx',
-            linkUrl: `${import.meta.env.VITE_EXPLORER_URL}/tx/${tx}`,
+            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digext}?network=testnet`,
         });
 
         form.value.amount = undefined;
