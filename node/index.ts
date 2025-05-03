@@ -8,7 +8,6 @@ const messageBridge = new MessageBridge();
 
 class Server {
   private readonly port = Number(process.env.PORT);
-  private readonly host = "localhost";
 
   start() {
     const server = http.createServer((req, res) => {
@@ -54,13 +53,12 @@ class Server {
       });
     });
 
-    return server.listen(this.port, this.host, () => {
-      console.log(`Server is running on http://${this.host}:${this.port}`);
-    });
+    return server.listen(this.port);
   }
 }
 
-new Server().start();
+const server = new Server();
+server.start();
 
 setInterval(
   () => tokenBridge.processIotaEvents(),
