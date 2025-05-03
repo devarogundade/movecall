@@ -7,7 +7,7 @@ const tokenBridge = new TokenBridge();
 const messageBridge = new MessageBridge();
 
 class Server {
-  private readonly port = 3000;
+  private readonly port = Number(process.env.PORT);
   private readonly host = "localhost";
 
   start() {

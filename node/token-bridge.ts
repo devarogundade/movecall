@@ -12,7 +12,7 @@ import { Transaction } from "@iota/iota-sdk/transactions";
 import { Ed25519Keypair } from "@iota/iota-sdk/keypairs/ed25519";
 import { bcs } from "@iota/iota-sdk/bcs";
 import { tokenBridgeAbi } from "./abis/token-bridge";
-
+import { mnemonicToAccount } from "viem/accounts";
 interface TokenTransferEVM {
   uid: Hex;
   token: Hex;
@@ -161,7 +161,7 @@ class TokenBridge {
         },
       }),
       transport: http(),
-      account: Config.privateKey(),
+      account: mnemonicToAccount(Config.privateKey()),
     });
 
     const uids = Object.keys(this.iotaPool);
