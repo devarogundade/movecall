@@ -24,3 +24,11 @@ source = { git = "https://github.com/iotaledger/iota.git", rev = "testnet", subd
 compiler-version = "0.12.0-rc"
 edition = "2024.beta"
 flavor = "iota"
+
+[env]
+
+[env.testnet]
+chain-id = "2304aa97"
+original-published-id = "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3"
+latest-published-id = "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3"
+published-version = "1"

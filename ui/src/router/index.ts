@@ -1,3 +1,4 @@
+import AIView from "@/views/AIView.vue";
 import MessageBridgeView from "@/views/MessageBridgeView.vue";
 import StakeView from "@/views/StakeView.vue";
 import TokenBridgeView from "@/views/TokenBridgeView.vue";
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/stake",
       name: "stake",
       component: StakeView,
+    },
+    {
+      path: "/ai",
+      name: "ai",
+      component: AIView,
     },
   ],
 });

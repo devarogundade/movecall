@@ -97,6 +97,7 @@ class TokenBridge {
         arguments: [
           transaction.object(Config.moveCallCap()),
           transaction.object(Config.moveCallState()),
+          transaction.object(Config.tokenBrige(0)),
           transaction.object(Config.coinMetadata(event.token)),
           transaction.pure(
             bcs.vector(bcs.Address).serialize(events.map((e) => e.signer))

@@ -13,8 +13,9 @@ export type Token = {
   decimals: { [key: number]: number };
   address: { [key: number]: Hex };
   metadata: { [key: number]: Hex };
+  faucet: { [key: number]: Hex };
   image: string;
-  faucet: number;
+  faucetAmount: number;
 };
 
 export type Strategy = {

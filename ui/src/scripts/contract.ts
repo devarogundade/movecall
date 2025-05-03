@@ -7,7 +7,7 @@ import type { NightlyConnectIotaAdapter } from "@nightlylabs/wallet-selector-iot
 import { Transaction } from "@iota/iota-sdk/transactions";
 import { bcs } from "@iota/iota-sdk/bcs";
 import { CoinContract } from "./erc20";
-import { IOTA_TYPE_ARG } from "@iota/iota-sdk/utils";
+import { IOTA_COIN } from "./constants";
 
 const HoleskyContract = {
   tokenBridge: "0xAe140a39625119551A1E9e4E82FAF354B48Ec948" as Hex,
@@ -89,9 +89,12 @@ const HoleskyContract = {
 };
 
 const IOTAContract = {
-  package: "0x" as Hex,
-  tokenBridge: "0x" as Hex,
-  messageBridge: "0x" as Hex,
+  package:
+    "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3" as Hex,
+  tokenBridge:
+    "0xb4a83d58a2a477d571ea32e5b0877c4d2044e3f0d230095d8046f5c7151436e4" as Hex,
+  messageBridge:
+    "0x441d8d066ac7920efa5917f6642972c6a21c493cc361281756909d34ca4907fd" as Hex,
 
   async transferToken(
     adapter: NightlyConnectIotaAdapter,
@@ -108,7 +111,7 @@ const IOTAContract = {
 
       let coinTransfer;
 
-      if (coinType === IOTA_TYPE_ARG) {
+      if (coinType === IOTA_COIN) {
         const [coinResult] = transaction.splitCoins(transaction.gas, [10_000]);
         coinTransfer = coinResult;
       } else {
