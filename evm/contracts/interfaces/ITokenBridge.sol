@@ -21,14 +21,14 @@ interface ITokenBridge {
         address receiver
     );
 
-    function tokenTranfer(
+    function tokenTransfer(
         address token,
         uint256 amount,
         uint64 toChain,
         bytes32 receiver
     ) external returns (bytes32 uid);
 
-    function tokenTranferETH(
+    function tokenTransferETH(
         uint64 toChain,
         bytes32 receiver
     ) external payable returns (bytes32 uid);

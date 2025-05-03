@@ -11,15 +11,15 @@ import { IotaClient, getFullnodeUrl } from "@iota/iota-sdk/client";
 import { Transaction } from "@iota/iota-sdk/transactions";
 import { Ed25519Keypair } from "@iota/iota-sdk/keypairs/ed25519";
 import { bcs } from "@iota/iota-sdk/bcs";
-import { tokenBridgeAbi } from "./abis/token-bridge";
+import { moveCallAbi } from "./abis/movecall";
 import { mnemonicToAccount } from "viem/accounts";
 interface TokenTransferEVM {
   uid: Hex;
   token: Hex;
   decimals: number;
-  amount: bigint;
+  amount: string;
   receiver: Hex;
-  toChain: bigint;
+  toChain: number;
   chainId: number;
 }
 
@@ -32,7 +32,7 @@ interface TokenTransferIOTA {
   uid: Hex;
   coin_type: string;
   decimals: number;
-  amount: bigint;
+  amount: string;
   to_chain: number;
   receiver: Hex;
   chain_id: number;
@@ -49,7 +49,7 @@ class TokenBridge {
   iotaPool: { [key: string]: SignedTokenTransferIOTA[] };
 
   constructor() {
-    this.minSigners = 2;
+    this.minSigners = 1;
     this.holeskyPool = {};
     this.iotaPool = {};
   }
@@ -73,6 +73,8 @@ class TokenBridge {
       } else {
         this.iotaPool[event.uid] = [event];
       }
+
+      console.log(this.iotaPool);
     }
   }
 
@@ -174,25 +176,33 @@ class TokenBridge {
 
       const offChainSignatureId = zeroHash;
 
-      const hash = await walletClient.writeContract({
-        address: Config.tokenBrige(17_000),
-        abi: tokenBridgeAbi,
-        functionName: "attestTokenClaim",
-        args: [
-          offChainSignatureId,
-          event.uid,
-          event.chain_id,
-          Config.token(event.coin_type),
-          event.amount,
-          event.decimals,
-          event.receiver,
-        ],
-      });
+      console.log("Processing ", event, Config.token(event.coin_type));
 
-      const { status } = await publicClient.waitForTransactionReceipt({ hash });
+      try {
+        const hash = await walletClient.writeContract({
+          address: Config.moveCall(17_000),
+          abi: moveCallAbi,
+          functionName: "attestTokenClaim",
+          args: [
+            offChainSignatureId,
+            event.uid,
+            event.chain_id,
+            Config.token(event.coin_type),
+            event.amount,
+            event.decimals,
+            event.receiver,
+          ],
+        });
 
-      if (status === "success") {
-        delete this.iotaPool[uids[index]];
+        const { status } = await publicClient.waitForTransactionReceipt({
+          hash,
+        });
+
+        if (status === "success") {
+          delete this.iotaPool[uids[index]];
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
   }

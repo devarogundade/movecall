@@ -17,7 +17,7 @@ contract TokenBridge is Ownable, ITokenBridge {
 
     // ========== Mutable Functions ========== //
 
-    function tokenTranfer(
+    function tokenTransfer(
         address token,
         uint256 amount,
         uint64 toChain,
@@ -29,7 +29,7 @@ contract TokenBridge is Ownable, ITokenBridge {
         return _tokenTranfer(token, amount, toChain, receiver, decimals);
     }
 
-    function tokenTranferETH(
+    function tokenTransferETH(
         uint64 toChain,
         bytes32 receiver
     ) external payable override returns (bytes32 uid) {

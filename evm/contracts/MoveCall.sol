@@ -11,6 +11,14 @@ contract MoveCall is Ownable {
 
     constructor() Ownable(msg.sender) {}
 
+    function setBridges(
+        ITokenBridge tokenBridge,
+        IMessageBridge messageBridge
+    ) external onlyOwner {
+        _tokenBridge = tokenBridge;
+        _messageBridge = messageBridge;
+    }
+
     function receiveMessage(
         bytes32 offChainSignatureId,
         bytes32 sourceUid,

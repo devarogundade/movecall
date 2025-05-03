@@ -281,7 +281,7 @@ export const tokenBridgeAbi = [
         type: "bytes32",
       },
     ],
-    name: "tokenTranfer",
+    name: "tokenTransfer",
     outputs: [
       {
         internalType: "bytes32",
@@ -305,7 +305,7 @@ export const tokenBridgeAbi = [
         type: "bytes32",
       },
     ],
-    name: "tokenTranferETH",
+    name: "tokenTransferETH",
     outputs: [
       {
         internalType: "bytes32",

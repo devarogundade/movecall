@@ -1,16 +1,24 @@
 import { IotaClient, getFullnodeUrl } from "@iota/iota-sdk/client";
-import { createPublicClient, defineChain, http, parseAbiItem } from "viem";
+import {
+  bytesToHex,
+  createPublicClient,
+  defineChain,
+  http,
+  parseAbiItem,
+  toBytes,
+  toHex,
+} from "viem";
 import type { Hex, WatchEventReturnType } from "viem";
 import Config from "./config";
-import RangeTime from "./range-time";
+import { bcs } from "@iota/iota-sdk/bcs";
 
 interface TokenTransferEVM {
   hash: string;
   uid: Hex;
   token: string;
   decimals: number;
-  amount: bigint;
-  toChain: bigint;
+  amount: string;
+  toChain: number;
   receiver: Hex;
   chainId: number;
 }
@@ -23,9 +31,9 @@ interface SignedTokenTransferEVM extends TokenTransferEVM {
 interface TokenTransferIOTA {
   hash: string;
   uid: Hex;
-  coin_type: string;
+  coin_type: Hex;
   decimals: number;
-  amount: bigint;
+  amount: string;
   to_chain: number;
   receiver: Hex;
   chain_id: number;
@@ -67,19 +75,21 @@ class TokenBridge {
       pollingInterval: Config.HOLESKY_EVENT_INTERVAL_MS,
       onLogs: (events) => {
         const data = events
-          .filter((event) => !this.sent[event.transactionHash])
+          .filter((event) => !Boolean(this.sent[event.transactionHash]))
           .map((event) => {
             return {
               hash: event.transactionHash,
               uid: event.args.uid!,
               token: event.args.token!,
               decimals: Number(event.args.decimals!),
-              amount: event.args.amount!,
-              toChain: event.args.toChain!,
+              amount: event.args.amount!.toString(),
+              toChain: Number(event.args.toChain!),
               receiver: event.args.receiver!,
               chainId: 17_000,
             };
           });
+
+        console.log("Holesky", data);
 
         if (data.length !== 0) callback(data);
       },
@@ -98,25 +108,41 @@ class TokenBridge {
       url: getFullnodeUrl("testnet"),
     });
 
-    const events = await iotaClient.queryEvents({
-      order: "descending",
-      limit: Config.IOTA_QUERY_LIMIT,
-      query: {
-        MoveEventType: `${Config.moveCall(0)}::token_bridge::TokenTransfer`,
-      },
-    });
-
-    const data = events.data
-      .filter((event) => !this.sent[event.id.txDigest])
-      .map((event) => {
-        return {
-          hash: event.id.txDigest,
-          ...Object(event.parsedJson),
-          chain_id: 0,
-        };
+    try {
+      const events = await iotaClient.queryEvents({
+        order: "descending",
+        limit: Config.IOTA_QUERY_LIMIT,
+        query: {
+          MoveEventType: `${Config.moveCall(0)}::token_bridge::TokenTransfer`,
+        },
       });
 
-    if (data.length !== 0) callback(data);
+      const data = events.data
+        .filter((event) => !Boolean(this.sent[event.id.txDigest]))
+        .map((event) => {
+          const parsedJson = Object(event.parsedJson);
+          return {
+            hash: event.id.txDigest,
+            uid: toHex(bcs.U64.parse(Uint8Array.from(parsedJson.uid)), {
+              size: 32,
+            }),
+            coin_type: `0x${parsedJson.coin_type}` as Hex,
+            amount: parsedJson.amount,
+            decimals: Number(parsedJson.decimals),
+            receiver: new TextDecoder().decode(
+              Uint8Array.from(parsedJson.receiver)
+            ) as Hex,
+            to_chain: Number(parsedJson.to_chain),
+            chain_id: 0,
+          };
+        });
+
+      console.log("Iota", data);
+
+      if (data.length !== 0) callback(data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

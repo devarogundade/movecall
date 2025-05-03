@@ -20,6 +20,7 @@ const TokenModule = buildModule("TokenModule", (m) => {
   });
 
   m.call(iota, "mint", [parseUnits("10000000000", 18)], { id: "DOGE" });
+  m.call(doge, "mint", [parseUnits("10000000000", 18)], { id: "DOGE2" });
   m.call(btc, "mint", [parseUnits("1000", 8)], { id: "BTC" });
   m.call(usdc, "mint", [parseUnits("1000000", 6)], { id: "USDC" });
   m.call(iota, "mint", [parseUnits("10000000", 18)], { id: "IOTA" });

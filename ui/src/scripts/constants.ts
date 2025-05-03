@@ -33,7 +33,7 @@ export const tokens: Token[] = [
       0: 6,
     },
     address: {
-      17000: "0x8686F62a11EC9441572436b0d39dEed936845DD3",
+      17000: "0xBB31e775E26DdD8572250DB88527cB4350764816",
       0: `${IOTAContract.package}::doge::DOGE` as Hex,
     },
     metadata: {
@@ -79,7 +79,7 @@ export const tokens: Token[] = [
       0: 8,
     },
     address: {
-      17000: "0xFf38dBA7Ed4714330fcDbC1722C66F5df73e020E",
+      17000: "0xD197EF1728139dd586f92A46Cc5d4A9030e6b886",
       0: `${IOTAContract.package}::btc::BTC` as Hex,
     },
     metadata: {
@@ -102,7 +102,7 @@ export const tokens: Token[] = [
       0: 6,
     },
     address: {
-      17000: "0x8058C85552e8D3E5Ec844Dab3dfAF64a77fD610e",
+      17000: "0xBEa3F061019aE5cd0318F24811DEEF6C6706703b",
       0: `${IOTAContract.package}::usdc::USDC` as Hex,
     },
     metadata: {
@@ -125,7 +125,7 @@ export const tokens: Token[] = [
       0: 9,
     },
     address: {
-      17000: "0x108353B68DF4dC58cF37dFa9cE20A77387f29f19",
+      17000: "0xC85F04890aA94d3f25688494508ed1C20EE5C11F",
       0: IOTA_COIN,
     },
     metadata: {
@@ -144,7 +144,7 @@ export const tokens: Token[] = [
       0: 9,
     },
     address: {
-      17000: "0xC6AE30aFAcd87EE0f8F1F1a9C1EF710211B91674",
+      17000: "0x5A8aCE90f414Beeb40fd9e008A4689b2ce4b8EE9",
       0: `${IOTAContract.package}::link::LINK` as Hex,
     },
     metadata: {
