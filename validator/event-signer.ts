@@ -4,9 +4,7 @@ import Config from "./config";
 
 class EventSigner {
   async sign(uid: Hex): Promise<{ signature: string; signer: string }> {
-    const signer = Ed25519Keypair.fromSecretKey(
-      new TextEncoder().encode(Config.secretKey())
-    );
+    const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
     const { signature } = await signer.signPersonalMessage(
       new TextEncoder().encode(uid)

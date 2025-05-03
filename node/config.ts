@@ -4,19 +4,32 @@ import type { Hex } from "viem";
 dotenv.config();
 
 const MOVE_CALL: { [key: number]: Hex } = {
-  1: "0x",
+  17000: "0xb71e4E5673857569C6e1e2F78f0d602A164aAd40",
+  0: "0x",
 };
 
 const TOKEN_BRIDGE: { [key: number]: Hex } = {
-  1: "0x",
+  17000: "0xAe140a39625119551A1E9e4E82FAF354B48Ec948",
+  0: "0x",
 };
+
+const MESSAGE_BRIDGE: { [key: number]: Hex } = {
+  17000: "0xDDd09e89D654F284da540B8AbC5C6Fe8ED330d8b",
+  0: "0x",
+};
+
+const COIN_METADATA: { [key: string]: string } = {};
+
+const COIN_TYPES: { [key: string]: string } = {};
+
+const TOKENS: { [key: string]: Hex } = {};
 
 const Config = {
   HOLESKY_EVENT_INTERVAL_MS: 60_000,
   IOTA_EVENT_INTERVAL_MS: 60_000,
 
   privateKey(): Hex {
-    return process.env.PRIVATE_KEY!;
+    return process.env.PRIVATE_KEY! as Hex;
   },
 
   secretKey(): string {
@@ -40,15 +53,15 @@ const Config = {
   },
 
   coinMetadata(token: Hex): string {
-    return TOKEN_BRIDGE[chainId];
+    return COIN_METADATA[token];
   },
 
   coinType(token: Hex): string {
-    return TOKEN_BRIDGE[chainId];
+    return COIN_TYPES[token];
   },
 
   token(coinType: string): Hex {
-    return TOKEN_BRIDGE[chainId];
+    return TOKENS[coinType];
   },
 };
 

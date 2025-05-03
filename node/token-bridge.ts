@@ -81,9 +81,7 @@ class TokenBridge {
       url: getFullnodeUrl("testnet"),
     });
 
-    const signer = Ed25519Keypair.fromSecretKey(
-      new TextEncoder().encode(Config.secretKey())
-    );
+    const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
     const uids = Object.keys(this.holeskyPool);
 
