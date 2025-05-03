@@ -1,5 +1,6 @@
+import { IOTA_TYPE_ARG } from "@iota/iota-sdk/utils";
+import { zeroAddress, type Hex } from "viem";
 import dotenv from "dotenv";
-import type { Hex } from "viem";
 
 dotenv.config();
 
@@ -19,10 +20,40 @@ const MESSAGE_BRIDGE: { [key: number]: Hex } = {
 };
 
 const COIN_METADATA: { [key: string]: string } = {};
+COIN_METADATA["0xFf38dBA7Ed4714330fcDbC1722C66F5df73e020E"] = ""; // BTC
+COIN_METADATA["0x8686F62a11EC9441572436b0d39dEed936845DD3"] = ""; // DOGE
+COIN_METADATA["0x108353B68DF4dC58cF37dFa9cE20A77387f29f19"] = ""; // IOTA
+COIN_METADATA["0xC6AE30aFAcd87EE0f8F1F1a9C1EF710211B91674"] = ""; // LINK
+COIN_METADATA["0x8058C85552e8D3E5Ec844Dab3dfAF64a77fD610e"] = ""; // USDC
+COIN_METADATA[zeroAddress] = ""; // ETH
 
 const COIN_TYPES: { [key: string]: string } = {};
+COIN_TYPES[
+  "0xFf38dBA7Ed4714330fcDbC1722C66F5df73e020E"
+] = `${MOVE_CALL[0]}::btc::BTC`;
+COIN_TYPES[
+  "0x8686F62a11EC9441572436b0d39dEed936845DD3"
+] = `${MOVE_CALL[0]}::doge::DOGE`;
+COIN_TYPES["0x108353B68DF4dC58cF37dFa9cE20A77387f29f19"] = IOTA_TYPE_ARG;
+COIN_TYPES[
+  "0xC6AE30aFAcd87EE0f8F1F1a9C1EF710211B91674"
+] = `${MOVE_CALL[0]}::link::LINK`;
+COIN_TYPES[
+  "0x8058C85552e8D3E5Ec844Dab3dfAF64a77fD610e"
+] = `${MOVE_CALL[0]}::usdc::USDC`;
+COIN_TYPES[zeroAddress] = `${MOVE_CALL[0]}::eth::ETH`;
 
 const TOKENS: { [key: string]: Hex } = {};
+TOKENS[`${MOVE_CALL[0]}::btc::BTC`] =
+  "0xFf38dBA7Ed4714330fcDbC1722C66F5df73e020E";
+TOKENS[`${MOVE_CALL[0]}::doge::DOGE`] =
+  "0x8686F62a11EC9441572436b0d39dEed936845DD3";
+TOKENS[IOTA_TYPE_ARG] = "0x108353B68DF4dC58cF37dFa9cE20A77387f29f19";
+TOKENS[`${MOVE_CALL[0]}::link::LINK`] =
+  "0xC6AE30aFAcd87EE0f8F1F1a9C1EF710211B91674";
+TOKENS[`${MOVE_CALL[0]}::usdc::USDC`] =
+  "0x8058C85552e8D3E5Ec844Dab3dfAF64a77fD610e";
+TOKENS[`${MOVE_CALL[0]}::eth::ETH`] = zeroAddress;
 
 const Config = {
   HOLESKY_EVENT_INTERVAL_MS: 60_000,
@@ -50,6 +81,10 @@ const Config = {
 
   tokenBrige(chainId: number): Hex {
     return TOKEN_BRIDGE[chainId];
+  },
+
+  messageBridge(chainId: number): Hex {
+    return MESSAGE_BRIDGE[chainId];
   },
 
   coinMetadata(token: Hex): string {

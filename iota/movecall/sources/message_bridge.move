@@ -128,4 +128,11 @@ module movecall::message_bridge {
         vector::append(&mut root, bcs::to_bytes(&tx_context::sender(ctx)));
         root        
     }
+
+    #[test_only]
+    public(package) fun init_for_testing(
+        ctx: &mut TxContext,
+    ) {
+        init(ctx);
+    }
 }

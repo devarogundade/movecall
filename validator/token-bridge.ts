@@ -112,7 +112,7 @@ class TokenBridge {
         return {
           ...Object(event.parsedJson),
           chain_id: 0,
-        } as TokenTransferIOTA;
+        };
       })
     );
 

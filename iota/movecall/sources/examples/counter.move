@@ -32,4 +32,11 @@ module movecall::counter {
         let mut data = bcs::new(payload);
         counter.value = counter.value + bcs::peel_u64(&mut data);
     }
+
+    #[test_only]
+    public(package) fun init_for_testing(
+        ctx: &mut TxContext,
+    ) {
+        init(ctx);
+    }    
 }

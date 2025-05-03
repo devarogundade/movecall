@@ -1,12 +1,14 @@
 import http from "http";
 import { TokenBridge } from "./token-bridge";
 import { Config } from "./config";
+import { MessageBridge } from "message-bridge";
 
 const tokenBridge = new TokenBridge();
+const messageBridge = new MessageBridge();
 
 class Server {
-  readonly port = 8000;
-  readonly host = "localhost";
+  private readonly port = 3000;
+  private readonly host = "localhost";
 
   start() {
     const server = http.createServer((req, res) => {
@@ -17,6 +19,8 @@ class Server {
       });
 
       req.on("end", () => {
+        res.setHeader("Content-Type", "application/json");
+
         try {
           if (
             req.url === "/holesky-token-tranfer-events" &&
@@ -28,9 +32,19 @@ class Server {
             req.method === "POST"
           ) {
             tokenBridge.addIotaEvents(JSON.parse(body));
+          } else if (
+            req.url === "/holesky-message-sent-events" &&
+            req.method === "POST"
+          ) {
+          } else if (
+            req.url === "/iota-message-sent-events" &&
+            req.method === "POST"
+          ) {
+          } else {
+            res.writeHead(404);
+            return res.end(JSON.stringify({ error: "Not found" }));
           }
 
-          res.setHeader("Content-Type", "application/json");
           res.writeHead(200);
           res.end(JSON.stringify({ status: "OK" }));
         } catch (err) {
@@ -40,7 +54,7 @@ class Server {
       });
     });
 
-    server.listen(this.port, this.host, () => {
+    return server.listen(this.port, this.host, () => {
       console.log(`Server is running on http://${this.host}:${this.port}`);
     });
   }
