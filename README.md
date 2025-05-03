@@ -1,4 +1,4 @@
 # Docs
 
 
-# Running a validator's node.
+## Running a validator's node.
