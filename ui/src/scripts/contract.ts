@@ -105,6 +105,7 @@ const IOTAContract = {
   ): Promise<string | null> {
     const accounts = await adapter.getAccounts();
     if (accounts.length === 0) return null;
+
     try {
       const transaction = new Transaction();
 
@@ -115,9 +116,10 @@ const IOTAContract = {
         coinTransfer = coinResult;
       } else {
         const coins = await CoinContract.getCoins(
-          accounts[0].address,
-          coinType
+          coinType,
+          accounts[0].address
         );
+
         const coinsObject = coins.map((coin) => coin.coinObjectId);
 
         if (coinsObject.length === 0) return null;
@@ -154,6 +156,8 @@ const IOTAContract = {
 
       return digest;
     } catch (error) {
+      console.log(error);
+
       return null;
     }
   },

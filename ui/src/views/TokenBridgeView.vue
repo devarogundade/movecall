@@ -401,7 +401,7 @@ watch(computed(() => walletStore.holeskyAddress), () => {
                         :disabled="!form.amount || form.amount == 0 || walletStore.approvals[form.token.address[form.fromChain.id]] < form.amount">
                         {{ bridging ? '•••' : 'Bridge' }}</button>
 
-                    <button v-else-if="form.fromChain.id !== 17000" @click="bridgeHolesky"
+                    <button v-else-if="form.fromChain.id === 17000" @click="bridgeHolesky"
                         :disabled="!form.amount || form.amount == 0">
                         {{ bridging ? '•••' : 'Bridge' }}</button>
 

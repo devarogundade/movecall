@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { getFullnodeUrl, IotaClient } from "@iota/iota-sdk/client";
+import { CoinStruct, getFullnodeUrl, IotaClient } from "@iota/iota-sdk/client";
 import { Ed25519Keypair } from "@iota/iota-sdk/keypairs/ed25519";
 import { Config } from "config";
 
@@ -11,13 +11,28 @@ const client = new IotaClient({
 
 const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
+const getCoins = async (
+  coinType: string,
+  owner: string
+): Promise<CoinStruct[]> => {
+  try {
+    const coins = await client.getCoins({
+      coinType,
+      owner,
+    });
+    return coins.data;
+  } catch (error) {
+    return [];
+  }
+};
+
 const Coins = [
   {
     coinType: `${Config.moveCall(0)}::btc::BTC`,
     module: "btc",
     witness: "BTC",
     treasuryCap:
-      "0x2e07b326e1719d81e2cf1cfbd6f5edf781191093d20c8df71e9927a1f93da223",
+      "0xf490545c8f2796814fab90670a334fdbdb9e1c265489d3deaae2265cec6b8a0a",
     faucet:
       "0x22991bb114d1b8e55ec4ebf9fecbee9852547ae4074e9ff2d608c98edb94da14",
   },
@@ -68,4 +83,4 @@ const Coins = [
   },
 ];
 
-export { client, signer, Coins };
+export { client, signer, Coins, getCoins };
