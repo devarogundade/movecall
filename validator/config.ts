@@ -4,7 +4,8 @@ import type { Hex } from "viem";
 dotenv.config();
 
 const MOVE_CALL: { [key: number]: Hex } = {
-  1: "0x",
+  17000: "0xb71e4E5673857569C6e1e2F78f0d602A164aAd40",
+  0: "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3",
 };
 
 const TOKEN_BRIDGE: { [key: number]: Hex } = {
@@ -21,8 +22,9 @@ const IOTA_COIN =
   "0x0000000000000000000000000000000000000000000000000000000000000002::iota::IOTA";
 
 const Config = {
-  HOLESKY_EVENT_INTERVAL_MS: 60_000,
-  IOTA_EVENT_INTERVAL_MS: 60_000,
+  HOLESKY_EVENT_INTERVAL_MS: 15_000,
+  IOTA_EVENT_INTERVAL_MS: 15_000,
+  IOTA_QUERY_LIMIT: 100,
 
   iotaCoin(): string {
     return IOTA_COIN;

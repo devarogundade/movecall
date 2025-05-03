@@ -166,21 +166,28 @@ export const strategies: Strategy[] = [
     name: "IOTA",
     symbol: "IOTA",
     decimals: 9,
-    address: "0x1",
+    address: IOTA_COIN,
+    module: "",
     image: "/images/iota.png",
-    about: "",
-    link: "",
-    faucet: 0,
+    about:
+      "IOTA is a decentralized blockchain infrastructure to build and secure our digital world.",
+    link: "https://iota.org",
+    faucetAmount: 0,
+    faucet: "",
   },
   {
     name: "ANKR Liquid Staked IOTA",
     symbol: "akIOTA",
     decimals: 9,
-    address: "0x2",
-    image: "/images/iota.png",
-    about: "",
-    link: "",
-    faucet: 0.2,
+    address: `${IOTAContract.package}::akiota::AKIOTA` as Hex,
+    module: "akiota",
+    image: "/images/ankr.png",
+    about:
+      "Ankr's Decentralized Physical Infrastructure Network (DePIN) of nodes ensures Ankr's clients always have the shortest roundtrip path for RPC requests, providing fast Web3 experiences no matter where users are.",
+    link: "https://www.ankr.com",
+    faucetAmount: 10_000,
+    faucet:
+      "0x4c0622200c6861780656daf3f6cab8c6c6284f1a401d1e6f3a90c4c43e6f02da",
   },
 ];
 

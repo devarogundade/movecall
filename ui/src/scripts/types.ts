@@ -23,11 +23,13 @@ export type Strategy = {
   name: string;
   symbol: string;
   decimals: number;
-  address: string;
+  address: Hex;
+  module: string;
   image: string;
   about: string;
   link: string;
-  faucet: number;
+  faucetAmount: number;
+  faucet: string;
 };
 
 export type Notification = {

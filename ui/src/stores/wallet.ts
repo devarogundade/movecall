@@ -7,6 +7,7 @@ export const useWalletStore = defineStore("wallet", {
     iotaAddress: null as string | null,
     balances: {} as Record<Hex, number>,
     approvals: {} as Record<Hex, number>,
+    shares: {} as Record<Hex, number>,
   }),
   actions: {
     setHoleskyAddress(holeskyAddress: Hex | null) {
@@ -20,6 +21,9 @@ export const useWalletStore = defineStore("wallet", {
     },
     setApproval(token: Hex, approval: number) {
       this.approvals[token] = approval;
+    },
+    setShares(token: Hex, shares: number) {
+      this.shares[token] = shares;
     },
   },
 });

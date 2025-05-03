@@ -5,7 +5,7 @@ class RangeTime {
     this.time = Date.now();
   }
 
-  resetTime(timeMs: number | string) {
+  resetTime(timeMs: number) {
     this.time = new Date(timeMs).getTime();
   }
 

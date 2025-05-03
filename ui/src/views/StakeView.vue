@@ -1,34 +1,161 @@
 <script setup lang="ts">
 // import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue';
+import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue';
 import OutIcon from '@/components/icons/OutIcon.vue';
 import { notify } from '@/reactives/notify';
-import { strategies, findStrategy } from '@/scripts/constants';
-
-import { HoleskyContract } from '@/scripts/contract';
+import { useWalletStore } from '@/stores/wallet';
+import { strategies, findStrategy, IOTA_COIN } from '@/scripts/constants';
+import { StakeContract } from '@/scripts/contract';
 import { Converter } from '@/scripts/converter';
 import type { Strategy, } from '@/scripts/types';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAdapter } from '@/scripts/config';
+import { CoinContract } from '@/scripts/erc20';
+import { formatUnits, parseUnits } from 'viem';
 
 const route = useRoute();
+const { adapter } = useAdapter();
+const walletStore = useWalletStore();
 const amount = ref<number | undefined>(undefined);
 const strategy = ref<Strategy | undefined>(strategies[0]);
+const weight = ref<number | undefined>(undefined);
+const minting = ref<boolean>(false);
+const staking = ref<boolean>(false);
 
 const onStrategyChanged = (e: any) => {
     strategy.value = findStrategy(e.target.value);
 };
 
+const getBalances = async () => {
+    if (!walletStore.iotaAddress) return;
+    for (let i = 0; i < strategies.length; i++) {
+        const balance = await CoinContract.getCoinBalance(
+            strategies[i].address,
+            walletStore.iotaAddress
+        );
+
+        walletStore.setBalance(
+            strategies[i].address, Number(formatUnits(balance, strategies[i].decimals))
+        );
+    }
+};
+
+const getShares = async () => {
+    if (!walletStore.iotaAddress) return;
+    const shares = await StakeContract.getValidatorShares(
+        walletStore.iotaAddress,
+        strategies.map(strategy => strategy.address.replace('0x', ''))
+    );
+    shares.forEach((share, i) => walletStore.setShares(
+        strategies[i].address, Number(formatUnits(share, strategies[i].decimals))
+    ));
+};
+
+const getWeight = async () => {
+    if (!walletStore.iotaAddress) return;
+    weight.value = await StakeContract.getValidatorWeight(walletStore.iotaAddress);
+};
 
 const setAmount = (div: number = 1) => {
-
+    if (!strategy.value) return;
+    amount.value = walletStore.balances[strategy.value.address] / div;
 };
 
 const mint = async () => {
+    if (minting.value) return;
+    if (!strategy.value) return;
+    if (!adapter.value) return;
+    if (!walletStore.iotaAddress) return;
+
+    minting.value = true;
+
+    const digest: string | null = await CoinContract.mint(
+        adapter.value as any,
+        strategy.value.module,
+        strategy.value.faucet,
+        strategy.value.address,
+        parseUnits(strategy.value.faucetAmount.toString(), strategy.value.decimals),
+    );
+
+    if (digest) {
+        notify.push({
+            title: 'Minted',
+            description: `Minted ${strategy.value.symbol}`,
+            category: 'success',
+            linkTitle: 'View Trx',
+            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digest}?network=testnet`,
+        });
+
+        getBalances();
+    } else {
+        notify.push({
+            title: 'Mint Failed',
+            description: `Failed to mint ${strategy.value.symbol}`,
+            category: 'error'
+        });
+    }
+
+    minting.value = false;
 };
 
 const stake = async () => {
+    if (staking.value) return;
+    if (!strategy.value) return;
+
+    if (!amount.value) {
+        notify.push({
+            title: 'Amount Required',
+            description: `Please enter an amount`,
+            category: 'error'
+        });
+        return;
+    }
+
+    staking.value = true;
+
+    const digest: string | null = await StakeContract.stake(
+        adapter.value as any,
+        parseUnits(amount.value.toString(), strategy.value.decimals),
+        strategy.value.address
+    );
+
+    if (digest) {
+        notify.push({
+            title: 'Staked',
+            description: `Staked ${strategy.value.symbol}`,
+            category: 'success',
+            linkTitle: 'View Trx',
+            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digest}?network=testnet`,
+        });
+
+        amount.value = undefined;
+
+        getBalances();
+        getShares();
+        getWeight();
+    } else {
+        notify.push({
+            title: 'Stake Failed',
+            description: `Failed to bridge ${strategy.value.symbol}`,
+            category: 'error'
+        });
+    }
+
+    staking.value = false;
 };
 
+watch(computed(() => walletStore.iotaAddress), () => {
+    getBalances();
+    getWeight();
+    getShares();
+});
+
+
+watch(strategy, () => {
+    getWeight();
+    getShares();
+});
 
 onMounted(() => { });
 </script>
@@ -61,7 +188,8 @@ onMounted(() => { });
                         <div class="input">
                             <input type="number" v-model="amount" placeholder="0.00">
                             <div class="helper">
-                                <p>{{ 0 }} {{ strategy.symbol }}</p>
+                                <p>{{ Converter.toMoney(walletStore.balances[strategy.address]) }} {{
+                                    strategy.symbol }}</p>
                                 <div class="buttons">
                                     <button @click="setAmount(4)">25%</button>
                                     <button @click="setAmount(2)">50%</button>
@@ -70,15 +198,7 @@ onMounted(() => { });
                             </div>
                         </div>
 
-                        <div class="label">Select a validator</div>
-
-                        <select>
-                            <option v-for="strategy in strategies">
-                                {{ strategy.name }}
-                            </option>
-                        </select>
-
-                        <button class="restake" @click="stake">Stake</button>
+                        <button class="restake" @click="stake">{{ staking ? '•••' : 'Stake' }}</button>
                     </div>
 
                 </div>
@@ -88,7 +208,7 @@ onMounted(() => { });
                         <div class="stat">
                             <p>Wallet Balance</p>
                             <div class="value">
-                                <p>{{ 0 }}</p>
+                                <p>{{ Converter.toMoney(walletStore.balances[strategy.address]) }}</p>
                                 <span>{{ strategy.symbol }}</span>
                             </div>
                         </div>
@@ -96,14 +216,14 @@ onMounted(() => { });
                         <div class="stat">
                             <p>Value Staked</p>
                             <div class="value">
-                                <p>{{ 0 }}</p>
+                                <p>{{ Converter.toMoney(walletStore.shares[strategy.address]) }}</p>
                             </div>
                         </div>
 
                         <div class="stat">
-                            <p>Total Value Staked </p>
+                            <p>Weight </p>
                             <div class="value">
-                                <p>{{ 0 }}</p>
+                                <p>{{ weight }}</p>
                             </div>
                         </div>
                     </div>
@@ -131,8 +251,13 @@ onMounted(() => { });
                             <h3>Faucet</h3>
                         </div>
 
-                        <button class="mint" @click="mint">
-                            Mint {{ strategy.faucet }} {{ strategy.symbol }}
+                        <a href="https://docs.iota.org/developer/getting-started/get-coins"
+                            v-if="strategy.address == IOTA_COIN" target="_blank">
+                            <button class="mint"> Request Test IOTA </button>
+                        </a>
+                        <button v-else class="mint" @click="mint">
+                            {{ minting ? '•••' : `Mint ${Converter.toMoney(strategy.faucetAmount)} ${strategy.symbol}`
+                            }}
                         </button>
                     </div>
                 </div>

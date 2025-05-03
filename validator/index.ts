@@ -22,7 +22,10 @@ tokenBridge.syncHolesky(async (events) => {
       const { signature, signer } = await eventSigner.sign(event.uid);
       signedEvents.push({ ...event, signature, signer });
     }
+
     await api.post("/holesky-token-tranfer-events", signedEvents);
+
+    events.forEach((event) => tokenBridge.markAsSent(event.hash));
   } catch (error) {
     console.log(error);
   }
@@ -38,7 +41,10 @@ setInterval(
           const { signature, signer } = await eventSigner.sign(event.uid);
           signedEvents.push({ ...event, signature, signer });
         }
+
         await api.post("/iota-token-tranfers-events", signedEvents);
+
+        events.forEach((event) => tokenBridge.markAsSent(event.hash));
       } catch (error) {
         console.log(error);
       }

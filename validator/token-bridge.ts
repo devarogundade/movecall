@@ -5,6 +5,7 @@ import Config from "./config";
 import RangeTime from "./range-time";
 
 interface TokenTransferEVM {
+  hash: string;
   uid: Hex;
   token: string;
   decimals: number;
@@ -20,6 +21,7 @@ interface SignedTokenTransferEVM extends TokenTransferEVM {
 }
 
 interface TokenTransferIOTA {
+  hash: string;
   uid: Hex;
   coin_type: string;
   decimals: number;
@@ -35,7 +37,7 @@ interface SignedTokenTransferIOTA extends TokenTransferIOTA {
 }
 
 class TokenBridge {
-  private rangeTime = new RangeTime();
+  readonly sent: { [key: string]: boolean } = {};
 
   async syncHolesky(
     callback: (events: TokenTransferEVM[]) => void
@@ -64,9 +66,11 @@ class TokenBridge {
       ),
       pollingInterval: Config.HOLESKY_EVENT_INTERVAL_MS,
       onLogs: (events) => {
-        callback(
-          events.map((event) => {
+        const data = events
+          .filter((event) => !this.sent[event.transactionHash])
+          .map((event) => {
             return {
+              hash: event.transactionHash,
               uid: event.args.uid!,
               token: event.args.token!,
               decimals: Number(event.args.decimals!),
@@ -75,8 +79,9 @@ class TokenBridge {
               receiver: event.args.receiver!,
               chainId: 17_000,
             };
-          })
-        );
+          });
+
+        if (data.length !== 0) callback(data);
       },
       onError: (error) => {
         console.log(error);
@@ -84,39 +89,34 @@ class TokenBridge {
     });
   }
 
+  markAsSent(id: string) {
+    this.sent[id] = true;
+  }
+
   async callIOTA(callback: (events: TokenTransferIOTA[]) => void) {
     const iotaClient = new IotaClient({
       url: getFullnodeUrl("testnet"),
     });
 
-    const { startTime, endTime } = this.rangeTime.getTimeRange(
-      Config.IOTA_EVENT_INTERVAL_MS
-    );
-
     const events = await iotaClient.queryEvents({
+      order: "descending",
+      limit: Config.IOTA_QUERY_LIMIT,
       query: {
-        MoveModule: {
-          package: Config.moveCall(0),
-          module: "token_bridge",
-        },
         MoveEventType: `${Config.moveCall(0)}::token_bridge::TokenTransfer`,
-        TimeRange: {
-          startTime,
-          endTime,
-        },
       },
     });
 
-    callback(
-      events.data.map((event) => {
+    const data = events.data
+      .filter((event) => !this.sent[event.id.txDigest])
+      .map((event) => {
         return {
+          hash: event.id.txDigest,
           ...Object(event.parsedJson),
           chain_id: 0,
         };
-      })
-    );
+      });
 
-    this.rangeTime.resetTime(endTime);
+    if (data.length !== 0) callback(data);
   }
 }
 
