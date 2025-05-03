@@ -10,7 +10,13 @@ const TokenBridgeModule = buildModule("TokenBridgeModule", (m) => {
   const { moveCall } = m.useModule(MoveCallModule);
   const { doge, btc, usdc, iota, link } = m.useModule(TokenModule);
 
-  const tokenBridge = m.contract("TokenBridge", [moveCall]);
+  const mathLib = m.library("MathLib");
+
+  const tokenBridge = m.contract("TokenBridge", [moveCall], {
+    libraries: {
+      MathLib: mathLib,
+    },
+  });
 
   m.call(doge, "transfer", [tokenBridge, parseUnits("10000000000", 18)], {
     id: "DOGE",

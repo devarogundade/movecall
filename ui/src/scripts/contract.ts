@@ -10,8 +10,8 @@ import { CoinContract } from "./erc20";
 import { IOTA_TYPE_ARG } from "@iota/iota-sdk/utils";
 
 const HoleskyContract = {
-  tokenBridge: "0x" as Hex,
-  messageBridge: "0x" as Hex,
+  tokenBridge: "0xAe140a39625119551A1E9e4E82FAF354B48Ec948" as Hex,
+  messageBridge: "0xDDd09e89D654F284da540B8AbC5C6Fe8ED330d8b" as Hex,
 
   async tokenTransfer(
     token: Hex,
@@ -23,7 +23,7 @@ const HoleskyContract = {
       const result = await writeContract(config, {
         abi: tokenBridgeAbi,
         address: this.tokenBridge,
-        functionName: "tokenTransfer",
+        functionName: "tokenTranfer",
         args: [token, amount, toChain, receiver],
       });
 
@@ -33,6 +33,8 @@ const HoleskyContract = {
 
       return receipt.transactionHash;
     } catch (error) {
+      console.log(error);
+
       return null;
     }
   },
@@ -46,7 +48,7 @@ const HoleskyContract = {
       const result = await writeContract(config, {
         abi: tokenBridgeAbi,
         address: this.tokenBridge,
-        functionName: "tokenTransferETH",
+        functionName: "tokenTranferETH",
         args: [toChain, receiver],
         value: amount,
       });

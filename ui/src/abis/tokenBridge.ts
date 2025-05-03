@@ -329,4 +329,8 @@ export const tokenBridgeAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    stateMutability: "payable",
+    type: "receive",
+  },
 ];

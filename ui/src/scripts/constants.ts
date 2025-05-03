@@ -28,16 +28,15 @@ export const tokens: Token[] = [
       17000: 18,
       0: 9,
     },
-    price: 4.62,
     address: {
-      17000: "0x",
+      17000: "0x8686F62a11EC9441572436b0d39dEed936845DD3",
       0: "0x",
     },
     metadata: {
       0: "0x",
     },
     image: "/images/doge.png",
-    faucet: 10_000,
+    faucet: 1_000,
   },
   {
     name: "Ethereum",
@@ -46,7 +45,6 @@ export const tokens: Token[] = [
       17000: 18,
       0: 9,
     },
-    price: 3_424.23,
     address: {
       17000: zeroAddress,
       0: "0x",
@@ -64,9 +62,8 @@ export const tokens: Token[] = [
       17000: 8,
       0: 8,
     },
-    price: 94_329.42,
     address: {
-      17000: "0x",
+      17000: "0xFf38dBA7Ed4714330fcDbC1722C66F5df73e020E",
       0: "0x",
     },
     metadata: {
@@ -82,9 +79,8 @@ export const tokens: Token[] = [
       17000: 6,
       0: 6,
     },
-    price: 1.01,
     address: {
-      17000: "0x",
+      17000: "0x8058C85552e8D3E5Ec844Dab3dfAF64a77fD610e",
       0: "0x",
     },
     metadata: {
@@ -100,9 +96,8 @@ export const tokens: Token[] = [
       17000: 18,
       0: 9,
     },
-    price: 3.42,
     address: {
-      17000: "0x",
+      17000: "0x108353B68DF4dC58cF37dFa9cE20A77387f29f19",
       0: "0x",
     },
     metadata: {
@@ -118,15 +113,14 @@ export const tokens: Token[] = [
       17000: 18,
       0: 9,
     },
-    price: 4.62,
     address: {
-      17000: "0x",
+      17000: "0xC6AE30aFAcd87EE0f8F1F1a9C1EF710211B91674",
       0: "0x",
     },
     metadata: {
       0: "0x",
     },
     image: "/images/link.png",
-    faucet: 0.5,
+    faucet: 5,
   },
 ];

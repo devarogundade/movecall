@@ -19,7 +19,8 @@ interface TokenTransferEVM {
   decimals: number;
   amount: bigint;
   receiver: Hex;
-  chain_id: number;
+  toChain: bigint;
+  chainId: number;
 }
 
 interface SignedTokenTransferEVM extends TokenTransferEVM {
@@ -79,6 +80,7 @@ class TokenBridge {
     const iotaClient = new IotaClient({
       url: getFullnodeUrl("testnet"),
     });
+
     const signer = Ed25519Keypair.fromSecretKey(
       new TextEncoder().encode(Config.secretKey())
     );
@@ -111,7 +113,7 @@ class TokenBridge {
           transaction.pure(
             bcs.vector(bcs.U8).serialize(new TextEncoder().encode(event.uid))
           ),
-          transaction.pure.u64(event.chain_id),
+          transaction.pure.u64(event.chainId),
           transaction.pure.u64(event.amount),
           transaction.pure.u8(event.decimals),
           transaction.pure.address(event.receiver),

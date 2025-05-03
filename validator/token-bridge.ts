@@ -9,8 +9,9 @@ interface TokenTransferEVM {
   token: string;
   decimals: number;
   amount: bigint;
+  toChain: bigint;
   receiver: Hex;
-  chain_id: number;
+  chainId: number;
 }
 
 interface SignedTokenTransferEVM extends TokenTransferEVM {
@@ -59,7 +60,7 @@ class TokenBridge {
       address: Config.tokenBrige(17_000),
       fromBlock,
       event: parseAbiItem(
-        "event TokenTransfer(bytes32 indexed uid, address token, uint256 decimals, uint256 amount, bytes32 receiver)"
+        "event TokenTransfer(bytes32 indexed uid, address token, uint256 decimals, uint256 amount, uint64 toChain, bytes32 receiver)"
       ),
       pollingInterval: Config.HOLESKY_EVENT_INTERVAL_MS,
       onLogs: (events) => {
@@ -70,8 +71,9 @@ class TokenBridge {
               token: event.args.token!,
               decimals: Number(event.args.decimals!),
               amount: event.args.amount!,
+              toChain: event.args.toChain!,
               receiver: event.args.receiver!,
-              chain_id: 17_000,
+              chainId: 17_000,
             };
           })
         );

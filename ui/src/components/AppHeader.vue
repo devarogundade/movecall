@@ -72,7 +72,7 @@ onMounted(() => {
                             <button :class="route.name === 'stake' ? 'tab tab_active' : 'tab'">Stake to
                                 Earn</button>
                         </RouterLink>
-                        <a href="/stake" target="_blank">
+                        <a href="https://github.com/devarogundade/movecall" target="_blank">
                             <button class="tab">Docs</button>
                         </a>
                     </div>

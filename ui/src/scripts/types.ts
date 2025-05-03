@@ -11,7 +11,6 @@ export type Token = {
   name: string;
   symbol: string;
   decimals: { [key: number]: number };
-  price: number;
   address: { [key: number]: Hex };
   metadata: { [key: number]: Hex };
   image: string;

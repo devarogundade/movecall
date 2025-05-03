@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ChevronDownIcon from '@/components/icons/ChevronDownIcon.vue';
 import { Converter } from '@/scripts/converter';
 import { tokens, chain } from '@/scripts/constants';
@@ -252,7 +252,7 @@ const getBalances = async () => {
             );
 
             walletStore.setBalance(
-                tokens[i].address[form.value.fromChain.id], Number(formatUnits(balanceB, tokens[i].decimals[0]))
+                tokens[i].address[0], Number(formatUnits(balanceB, tokens[i].decimals[0]))
             );
         }
     }
@@ -274,12 +274,11 @@ const getApprovals = async () => {
     }
 };
 
-watch(form, () => {
+watch(computed(() => walletStore.iotaAddress), () => {
     getBalances();
-    getApprovals();
 });
 
-watch(walletStore, () => {
+watch(computed(() => walletStore.holeskyAddress), () => {
     getBalances();
     getApprovals();
 });
@@ -327,7 +326,7 @@ watch(walletStore, () => {
                                 <div class="bal">
                                     <p>Bal: {{
                                         Converter.toMoney(walletStore.balances[form.token.address[form.fromChain.id]])
-                                        }} {{
+                                    }} {{
                                             form.token.symbol }}
                                     </p>
                                     <a href="https://cloud.google.com/application/web3/faucet/ethereum/holesky"
