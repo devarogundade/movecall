@@ -1,7 +1,7 @@
 import http from "http";
 import { TokenBridge } from "./token-bridge";
 import { Config } from "./config";
-import { MessageBridge } from "message-bridge";
+import { MessageBridge } from "./message-bridge";
 
 const tokenBridge = new TokenBridge();
 const messageBridge = new MessageBridge();
