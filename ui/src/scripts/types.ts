@@ -14,6 +14,7 @@ export type Token = {
   address: { [key: number]: Hex };
   metadata: { [key: number]: Hex };
   faucet: { [key: number]: Hex };
+  module: { [key: number]: string };
   image: string;
   faucetAmount: number;
 };

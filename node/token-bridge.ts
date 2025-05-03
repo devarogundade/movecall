@@ -119,7 +119,7 @@ class TokenBridge {
         ],
         typeArguments: [Config.coinType(event.token)],
       });
-      transaction.setGasBudget(5_000_000);
+      transaction.setGasBudget(50_000_000);
 
       const { digest } = await iotaClient.signAndExecuteTransaction({
         transaction,

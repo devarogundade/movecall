@@ -7,6 +7,7 @@ const emit = defineEmits(['close', 'change']);
 
 const props = defineProps({
     balances: { type: Object, required: true },
+    chain: { type: Object, required: true },
     tokens: { type: Object, required: true },
 });
 
@@ -23,7 +24,7 @@ onUnmounted(() => {
     <div class="overlay">
         <div class="form">
             <div class="title">
-                <p>All Assets</p>
+                <p>All Assets ~ {{ props.chain.name }}</p>
 
                 <div class="close" @click="emit('close')">
                     <CloseIcon />
@@ -48,8 +49,8 @@ onUnmounted(() => {
                         </div>
 
                         <div class="amount">
-                            <p>{{ Converter.toMoney(props.balances[token.address]) }}</p>
-                            <p>≈ ${{ Converter.toMoney(token.price * props.balances[token.address]) }}</p>
+                            <p>{{ Converter.toMoney(props.balances[token.address[props.chain.id]]) }}</p>
+                            <p>$--</p>
                         </div>
                     </div>
                 </div>

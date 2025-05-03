@@ -17,7 +17,7 @@ const Coins = [
     module: "btc",
     witness: "BTC",
     treasuryCap:
-      "0x680d67389bdf13450ef450ee7db1a373d660269caf4f31640ee3511989396159",
+      "0x2e07b326e1719d81e2cf1cfbd6f5edf781191093d20c8df71e9927a1f93da223",
     faucet:
       "0x22991bb114d1b8e55ec4ebf9fecbee9852547ae4074e9ff2d608c98edb94da14",
   },
@@ -26,7 +26,7 @@ const Coins = [
     module: "link",
     witness: "LINK",
     treasuryCap:
-      "0x680d67389bdf13450ef450ee7db1a373d660269caf4f31640ee3511989396159",
+      "0x830cbeeaecb6d30bd4169ec76f03d836c6619c695958c13977efe917ec216d65",
     faucet:
       "0xd8a6c419af49332bac05f4e54eb8788034699bf45741855f48ebf541ea7edcba",
   },
@@ -35,7 +35,7 @@ const Coins = [
     module: "usdc",
     witness: "USDC",
     treasuryCap:
-      "0x680d67389bdf13450ef450ee7db1a373d660269caf4f31640ee3511989396159",
+      "0x3a8112ba3e035898d210497c26fc8d60fad2753e084bc5f5d8b4f8c7c9586e1b",
     faucet:
       "0xf5f68b27a72bd41db7b66db2b841348736dc5dbb35f62f468a3920c9ea15d056",
   },
@@ -44,7 +44,7 @@ const Coins = [
     module: "eth",
     witness: "ETH",
     treasuryCap:
-      "0x680d67389bdf13450ef450ee7db1a373d660269caf4f31640ee3511989396159",
+      "0x403bb46d4672880b5312aa05c945ebf1bfb0a9c8210b536031d991de7ba89114",
     faucet:
       "0x4473808e57a74fa202fb781fe0d850ccbc974931c252c8b88ee1df95d5f05b4f",
   },
@@ -62,7 +62,7 @@ const Coins = [
     module: "akiota",
     witness: "AKIOTA",
     treasuryCap:
-      "0x680d67389bdf13450ef450ee7db1a373d660269caf4f31640ee3511989396159",
+      "0x8661064095151957dda73de22f3c52dd1c7b19d987394d313ddf71143a133934",
     faucet:
       "0x4c0622200c6861780656daf3f6cab8c6c6284f1a401d1e6f3a90c4c43e6f02da",
   },

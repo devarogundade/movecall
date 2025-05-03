@@ -89,12 +89,11 @@ const HoleskyContract = {
 };
 
 const IOTAContract = {
-  package:
-    "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3" as Hex,
+  package: "0xf4f35fe7f876cb5d0b16dcb8754115ed7dd57b422edf2a85f401cb8e8bacc6d3",
   tokenBridge:
-    "0xb4a83d58a2a477d571ea32e5b0877c4d2044e3f0d230095d8046f5c7151436e4" as Hex,
+    "0xb4a83d58a2a477d571ea32e5b0877c4d2044e3f0d230095d8046f5c7151436e4",
   messageBridge:
-    "0x441d8d066ac7920efa5917f6642972c6a21c493cc361281756909d34ca4907fd" as Hex,
+    "0x441d8d066ac7920efa5917f6642972c6a21c493cc361281756909d34ca4907fd",
 
   async transferToken(
     adapter: NightlyConnectIotaAdapter,
@@ -103,7 +102,7 @@ const IOTAContract = {
     coinMetadata: string,
     toChain: number,
     receiver: string
-  ): Promise<Hex | null> {
+  ): Promise<string | null> {
     const accounts = await adapter.getAccounts();
     if (accounts.length === 0) return null;
     try {
@@ -153,7 +152,7 @@ const IOTAContract = {
         account: accounts[0],
       });
 
-      return digest as Hex;
+      return digest;
     } catch (error) {
       return null;
     }
@@ -164,7 +163,7 @@ const IOTAContract = {
     toChain: number,
     to: Hex,
     payload: Hex
-  ): Promise<Hex | null> {
+  ): Promise<string | null> {
     const accounts = await adapter.getAccounts();
     if (accounts.length === 0) return null;
     try {
@@ -189,7 +188,7 @@ const IOTAContract = {
         account: accounts[0],
       });
 
-      return digest as Hex;
+      return digest;
     } catch (error) {
       return null;
     }

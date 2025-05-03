@@ -37,9 +37,9 @@ export const config = defaultWagmiConfig({
   ],
 });
 
-export const useAdapter = () => {
-  const adapter = ref<NightlyConnectIotaAdapter | null>(null);
+const adapter = ref<NightlyConnectIotaAdapter | null>(null);
 
+export const useAdapter = () => {
   const initAdapter = async () => {
     adapter.value = await NightlyConnectIotaAdapter.build({
       appMetadata,

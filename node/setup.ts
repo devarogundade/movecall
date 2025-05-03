@@ -52,7 +52,7 @@ async function initStakeVault(coinType: string) {
     ],
     typeArguments: [coinType],
   });
-  transaction.setGasBudget(5_000_000);
+  transaction.setGasBudget(50_000_000);
   const { digest } = await client.signAndExecuteTransaction({
     transaction,
     signer,

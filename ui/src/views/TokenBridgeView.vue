@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import ChevronDownIcon from '@/components/icons/ChevronDownIcon.vue';
 import { Converter } from '@/scripts/converter';
-import { tokens, chain } from '@/scripts/constants';
+import { tokens, chain, IOTA_COIN } from '@/scripts/constants';
 import { CoinContract, TokenContract } from '@/scripts/erc20';
 import { useWalletStore } from '@/stores/wallet';
 import { formatUnits, parseUnits, zeroAddress, type Hex } from 'viem';
@@ -32,12 +32,6 @@ const interChange = () => {
     let tempFromChain = form.value.fromChain;
     form.value.fromChain = form.value.toChain;
     form.value.toChain = tempFromChain;
-
-    if (form.value.fromChain.id === 17000) {
-        form.value.receiver = walletStore.iotaAddress;
-    } else {
-        form.value.receiver = walletStore.holeskyAddress;
-    }
 };
 
 const onTokenChanged = (token: Token) => {
@@ -45,7 +39,7 @@ const onTokenChanged = (token: Token) => {
     allAssets.value = false;
 };
 
-const mint = async () => {
+const mintHolesky = async () => {
     if (minting.value) return;
     if (!walletStore.holeskyAddress) return;
 
@@ -53,7 +47,7 @@ const mint = async () => {
 
     const tx = await TokenContract.mint(
         form.value.token.address[17000],
-        parseUnits(form.value.token.faucet.toString(), form.value.token.decimals[17000]),
+        parseUnits(form.value.token.faucetAmount.toString(), form.value.token.decimals[17000]),
     );
 
     if (tx) {
@@ -63,6 +57,42 @@ const mint = async () => {
             category: 'success',
             linkTitle: 'View Trx',
             linkUrl: `${import.meta.env.VITE_HOLESKY_EXPLORER_URL}/tx/${tx}`,
+        });
+
+        getBalances();
+    } else {
+        notify.push({
+            title: 'Mint Failed',
+            description: `Failed to mint ${form.value.token.symbol}`,
+            category: 'error'
+        });
+    }
+
+    minting.value = false;
+};
+
+const mintIota = async () => {
+    if (minting.value) return;
+    if (!adapter.value) return;
+    if (!walletStore.iotaAddress) return;
+
+    minting.value = true;
+
+    const digest: string | null = await CoinContract.mint(
+        adapter.value as any,
+        form.value.token.module[0],
+        form.value.token.faucet[0],
+        form.value.token.address[0],
+        parseUnits(form.value.token.faucetAmount.toString(), form.value.token.decimals[0]),
+    );
+
+    if (digest) {
+        notify.push({
+            title: 'Minted',
+            description: `Minted ${form.value.token.symbol}`,
+            category: 'success',
+            linkTitle: 'View Trx',
+            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digest}?network=testnet`,
         });
 
         getBalances();
@@ -202,7 +232,7 @@ const bridgeIota = async () => {
 
     bridging.value = true;
 
-    let digext: Hex | null = await IOTAContract.transferToken(
+    let digest: string | null = await IOTAContract.transferToken(
         adapter.value as any,
         parseUnits(form.value.amount.toString(), form.value.token.decimals[0]),
         form.value.token.address[0],
@@ -211,13 +241,13 @@ const bridgeIota = async () => {
         form.value.receiver
     );
 
-    if (digext) {
+    if (digest) {
         notify.push({
             title: 'Bridged',
             description: `Bridged ${form.value.token.symbol}`,
             category: 'success',
             linkTitle: 'View Trx',
-            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digext}?network=testnet`,
+            linkUrl: `${import.meta.env.VITE_IOTA_EXPLORER_URL}/txblock/${digest}?network=testnet`,
         });
 
         form.value.amount = undefined;
@@ -326,7 +356,7 @@ watch(computed(() => walletStore.holeskyAddress), () => {
                                 <div class="bal">
                                     <p>Bal: {{
                                         Converter.toMoney(walletStore.balances[form.token.address[form.fromChain.id]])
-                                    }} {{
+                                        }} {{
                                             form.token.symbol }}
                                     </p>
                                     <a href="https://cloud.google.com/application/web3/faucet/ethereum/holesky"
@@ -334,8 +364,16 @@ watch(computed(() => walletStore.holeskyAddress), () => {
                                         v-if="form.fromChain.id === 17000 && form.token.address[17000] == zeroAddress">
                                         <button>Request Test ETH</button>
                                     </a>
-                                    <button v-else-if="form.fromChain.id === 17000" @click="mint">{{ minting ? '•••' :
-                                        'Mint Test ' + form.token.symbol }}</button>
+                                    <a href="https://docs.iota.org/developer/getting-started/get-coins" target="_blank"
+                                        v-else-if="form.fromChain.id === 0 && form.token.address[0] == IOTA_COIN">
+                                        <button>Request Test IOTA</button>
+                                    </a>
+                                    <button v-else-if="form.fromChain.id === 17000" @click="mintHolesky">
+                                        {{ minting ? '•••' : 'Mint Test ' + form.token.symbol }}
+                                    </button>
+                                    <button v-else @click="mintIota">
+                                        {{ minting ? '•••' : 'Mint Test ' + form.token.symbol }}
+                                    </button>
                                 </div>
                             </div>
                             <input type="number" placeholder="0.00" v-model="form.amount" />
@@ -373,8 +411,8 @@ watch(computed(() => walletStore.holeskyAddress), () => {
             </div>
         </div>
 
-        <AllAssets v-if="allAssets" @change="onTokenChanged" :balances="walletStore.balances" :tokens="tokens"
-            @close="allAssets = false" />
+        <AllAssets v-if="allAssets" @change="onTokenChanged" :balances="walletStore.balances" :chain="form.fromChain"
+            :tokens="tokens" @close="allAssets = false" />
         <NotifyPop />
     </section>
 </template>
