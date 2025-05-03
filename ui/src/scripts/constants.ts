@@ -1,5 +1,5 @@
 import { zeroAddress } from "viem";
-import type { Token, Chain } from "./types";
+import type { Token, Chain, Strategy } from "./types";
 
 export const chains: Chain[] = [
   {
@@ -124,3 +124,30 @@ export const tokens: Token[] = [
     faucet: 5,
   },
 ];
+
+export const strategies: Strategy[] = [
+  {
+    name: "IOTA",
+    symbol: "IOTA",
+    decimals: 9,
+    address: "0x1",
+    image: "/images/iota.png",
+    about: "",
+    link: "",
+    faucet: 0,
+  },
+  {
+    name: "ANKR Liquid Staked IOTA",
+    symbol: "akIOTA",
+    decimals: 9,
+    address: "0x2",
+    image: "/images/iota.png",
+    about: "",
+    link: "",
+    faucet: 0.2,
+  },
+];
+
+export const findStrategy = (address: string): Strategy | undefined => {
+  return strategies.find((c) => c.address === address);
+};

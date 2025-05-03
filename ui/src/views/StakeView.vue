@@ -2,14 +2,22 @@
 // import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue';
 import OutIcon from '@/components/icons/OutIcon.vue';
 import { notify } from '@/reactives/notify';
+import { strategies, findStrategy } from '@/scripts/constants';
 
 import { HoleskyContract } from '@/scripts/contract';
 import { Converter } from '@/scripts/converter';
+import type { Strategy, } from '@/scripts/types';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const amount = ref<number | undefined>(undefined);
+const strategy = ref<Strategy | undefined>(strategies[0]);
+
+const onStrategyChanged = (e: any) => {
+    strategy.value = findStrategy(e.target.value);
+};
+
 
 const setAmount = (div: number = 1) => {
 
@@ -28,26 +36,32 @@ onMounted(() => { });
 <template>
     <section>
         <div class="app_width">
-            <div class="stake" v-if="true">
+            <div class="stake" v-if="strategy">
                 <div class="stake_wrapper">
                     <div class="head">
                         <RouterLink to="/">
                             <div class="back">
                                 <ChevronLeftIcon />
-                                <p>Coins</p>
+                                <p>Exit</p>
                             </div>
                         </RouterLink>
                     </div>
 
                     <div class="box">
-                        <div class="label">
-                            You're restaking
-                        </div>
+                        <div class="label">Select a strategy</div>
+
+                        <select @change="onStrategyChanged">
+                            <option v-for="strategy in strategies" :value="strategy.address">
+                                {{ strategy.name }}
+                            </option>
+                        </select>
+
+                        <div class="label">You're staking</div>
 
                         <div class="input">
                             <input type="number" v-model="amount" placeholder="0.00">
                             <div class="helper">
-                                <p>{{ 0 }} {{ 'IOTA' }}</p>
+                                <p>{{ 0 }} {{ strategy.symbol }}</p>
                                 <div class="buttons">
                                     <button @click="setAmount(4)">25%</button>
                                     <button @click="setAmount(2)">50%</button>
@@ -56,8 +70,17 @@ onMounted(() => { });
                             </div>
                         </div>
 
+                        <div class="label">Select a validator</div>
+
+                        <select>
+                            <option v-for="strategy in strategies">
+                                {{ strategy.name }}
+                            </option>
+                        </select>
+
                         <button class="restake" @click="stake">Stake</button>
                     </div>
+
                 </div>
 
                 <div class="stake_info">
@@ -66,7 +89,7 @@ onMounted(() => { });
                             <p>Wallet Balance</p>
                             <div class="value">
                                 <p>{{ 0 }}</p>
-                                <span>{{ 'IOTA' }}</span>
+                                <span>{{ strategy.symbol }}</span>
                             </div>
                         </div>
 
@@ -92,15 +115,12 @@ onMounted(() => { });
 
                         <div class="coin_info">
                             <img :src="'/images/iota.png'" alt="btc">
-                            <p>{{ 'IOTA' }} <span>{{ 'IOTA' }}</span></p>
+                            <p>{{ strategy.name }} <span>{{ strategy.symbol }}</span></p>
                         </div>
 
-                        <div class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora
-                            blanditiis accusantium eligendi, magni beatae repudiandae eos, molestiae, laboriosam fugit
-                            distinctio necessitatibus adipisci perferendis repellendus commodi in ut omnis maiores
-                            itaque.</div>
+                        <div class="description">{{ strategy.about }}</div>
 
-                        <a v-if="true" :href="''" target="_blank" class="link">
+                        <a v-if="strategy.link" :href="strategy.link" target="_blank" class="link">
                             <p>Learn more</p>
                             <OutIcon />
                         </a>
@@ -112,7 +132,7 @@ onMounted(() => { });
                         </div>
 
                         <button class="mint" @click="mint">
-                            Mint {{ 0 }} {{ 'IOTA' }}
+                            Mint {{ strategy.faucet }} {{ strategy.symbol }}
                         </button>
                     </div>
                 </div>
@@ -176,6 +196,19 @@ onMounted(() => { });
     outline: none;
     border: none;
     color: var(--tx-normal);
+}
+
+select {
+    font-size: 14px;
+    background: var(--bg-lighter);
+    outline: none;
+    border: 1px solid var(--bg-lightest);
+    border-radius: 8px;
+    color: var(--tx-normal);
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+    padding: 0 16px;
 }
 
 .helper {

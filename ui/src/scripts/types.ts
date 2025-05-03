@@ -17,6 +17,17 @@ export type Token = {
   faucet: number;
 };
 
+export type Strategy = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  address: string;
+  image: string;
+  about: string;
+  link: string;
+  faucet: number;
+};
+
 export type Notification = {
   title: string;
   description: string;
