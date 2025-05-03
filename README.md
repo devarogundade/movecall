@@ -7,5 +7,10 @@
 ## Running a validator's node.
 
 ```
-https://docker.io/devarogundade/movecall-validator:latest
+docker pull devarogundade/movecall-validator
+```
+
+```env
+NODE_URL="https://movecall.onrender.com"
+SECRET_KEY=""
 ```
