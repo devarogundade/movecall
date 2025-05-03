@@ -2,7 +2,7 @@
 
 ## Using the token bridge.
 
-## Building a cross-chain dApp.
+## Building a cross-chain dApp (Message bridge).
 
 ## Running a validator's node.
 
