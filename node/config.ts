@@ -80,8 +80,8 @@ TOKENS[`${MOVE_CALL[0]}::usdc::USDC`] =
 TOKENS[`${MOVE_CALL[0]}::eth::ETH`] = zeroAddress;
 
 const Config = {
-  HOLESKY_EVENT_INTERVAL_MS: 15_000,
-  IOTA_EVENT_INTERVAL_MS: 15_000,
+  HOLESKY_EVENT_INTERVAL_MS: 30_000,
+  IOTA_EVENT_INTERVAL_MS: 30_000,
 
   iotaCoin(): string {
     return IOTA_COIN;

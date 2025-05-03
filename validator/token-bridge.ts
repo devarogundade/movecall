@@ -89,8 +89,6 @@ class TokenBridge {
             };
           });
 
-        console.log("Holesky", data);
-
         if (data.length !== 0) callback(data);
       },
       onError: (error) => {
@@ -136,8 +134,6 @@ class TokenBridge {
             chain_id: 0,
           };
         });
-
-      console.log("Iota", data);
 
       if (data.length !== 0) callback(data);
     } catch (error) {

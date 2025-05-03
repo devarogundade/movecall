@@ -49,7 +49,7 @@ class TokenBridge {
   iotaPool: { [key: string]: SignedTokenTransferIOTA[] };
 
   constructor() {
-    this.minSigners = 1;
+    this.minSigners = 2;
     this.holeskyPool = {};
     this.iotaPool = {};
   }
@@ -73,124 +73,134 @@ class TokenBridge {
       } else {
         this.iotaPool[event.uid] = [event];
       }
-
-      console.log(this.iotaPool);
     }
   }
 
   async processHoleskyEvents() {
-    const iotaClient = new IotaClient({
-      url: getFullnodeUrl("testnet"),
-    });
-
-    const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
-
-    const uids = Object.keys(this.holeskyPool);
-
-    for (let index = 0; index < uids.length; index++) {
-      const events = this.holeskyPool[uids[index]];
-
-      if (events.length < this.minSigners) continue;
-      const event = this.holeskyPool[uids[index]][0];
-
-      const transaction = new Transaction();
-      transaction.moveCall({
-        target: `${Config.moveCall(0)}::movecall::attest_token_claim`,
-        arguments: [
-          transaction.object(Config.moveCallCap()),
-          transaction.object(Config.moveCallState()),
-          transaction.object(Config.tokenBrige(0)),
-          transaction.object(Config.coinMetadata(event.token)),
-          transaction.pure(
-            bcs.vector(bcs.Address).serialize(events.map((e) => e.signer))
-          ),
-          transaction.pure(
-            bcs
-              .vector(bcs.vector(bcs.U8))
-              .serialize(
-                events.map((e) => new TextEncoder().encode(e.signature))
-              )
-          ),
-          transaction.pure(
-            bcs.vector(bcs.U8).serialize(new TextEncoder().encode(event.uid))
-          ),
-          transaction.pure.u64(event.chainId),
-          transaction.pure.u64(event.amount),
-          transaction.pure.u8(event.decimals),
-          transaction.pure.address(event.receiver),
-        ],
-        typeArguments: [Config.coinType(event.token)],
-      });
-      transaction.setGasBudget(50_000_000);
-
-      const { digest } = await iotaClient.signAndExecuteTransaction({
-        transaction,
-        signer,
+    try {
+      const iotaClient = new IotaClient({
+        url: getFullnodeUrl("testnet"),
       });
 
-      const { checkpoint } = await iotaClient.waitForTransaction({ digest });
+      const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
-      if (checkpoint) {
-        delete this.holeskyPool[uids[index]];
+      const uids = Object.keys(this.holeskyPool);
+
+      for (let index = 0; index < uids.length; index++) {
+        const events = this.holeskyPool[uids[index]];
+
+        if (!events || events.length < this.minSigners) continue;
+
+        const transaction = new Transaction();
+        transaction.moveCall({
+          target: `${Config.moveCall(0)}::movecall::attest_token_claim`,
+          arguments: [
+            transaction.object(Config.moveCallCap()),
+            transaction.object(Config.moveCallState()),
+            transaction.object(Config.tokenBrige(0)),
+            transaction.object(Config.coinMetadata(events[0].token)),
+            transaction.pure(
+              bcs.vector(bcs.Address).serialize(events.map((e) => e.signer))
+            ),
+            transaction.pure(
+              bcs
+                .vector(bcs.vector(bcs.U8))
+                .serialize(
+                  events.map((e) => new TextEncoder().encode(e.signature))
+                )
+            ),
+            transaction.pure(
+              bcs
+                .vector(bcs.U8)
+                .serialize(new TextEncoder().encode(events[0].uid))
+            ),
+            transaction.pure.u64(events[0].chainId),
+            transaction.pure.u64(events[0].amount),
+            transaction.pure.u8(events[0].decimals),
+            transaction.pure.address(events[0].receiver),
+          ],
+          typeArguments: [Config.coinType(events[0].token)],
+        });
+        transaction.setGasBudget(100_000_000);
+
+        const { digest } = await iotaClient.signAndExecuteTransaction({
+          transaction,
+          signer,
+        });
+
+        const { checkpoint } = await iotaClient.waitForTransaction({ digest });
+
+        console.log("Transaction digest, checkpoint: ", digest, checkpoint);
+
+        if (checkpoint) {
+          delete this.holeskyPool[uids[index]];
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   }
 
   async processIotaEvents() {
-    const publicClient = createPublicClient({
-      chain: defineChain({
-        id: 17_000,
-        name: "Holesky",
-        nativeCurrency: { name: "Holesky Ether", symbol: "ETH", decimals: 18 },
-        rpcUrls: {
-          default: {
-            http: ["https://rpc.ankr.com/eth_holesky"],
+    try {
+      const publicClient = createPublicClient({
+        chain: defineChain({
+          id: 17_000,
+          name: "Holesky",
+          nativeCurrency: {
+            name: "Holesky Ether",
+            symbol: "ETH",
+            decimals: 18,
           },
-        },
-      }),
-      transport: http(),
-    });
-
-    const walletClient = createWalletClient({
-      chain: defineChain({
-        id: 17_000,
-        name: "Holesky",
-        nativeCurrency: { name: "Holesky Ether", symbol: "ETH", decimals: 18 },
-        rpcUrls: {
-          default: {
-            http: ["https://rpc.ankr.com/eth_holesky"],
+          rpcUrls: {
+            default: {
+              http: ["https://rpc.ankr.com/eth_holesky"],
+            },
           },
-        },
-      }),
-      transport: http(),
-      account: mnemonicToAccount(Config.privateKey()),
-    });
+        }),
+        transport: http(),
+      });
 
-    const uids = Object.keys(this.iotaPool);
+      const walletClient = createWalletClient({
+        chain: defineChain({
+          id: 17_000,
+          name: "Holesky",
+          nativeCurrency: {
+            name: "Holesky Ether",
+            symbol: "ETH",
+            decimals: 18,
+          },
+          rpcUrls: {
+            default: {
+              http: ["https://rpc.ankr.com/eth_holesky"],
+            },
+          },
+        }),
+        transport: http(),
+        account: mnemonicToAccount(Config.privateKey()),
+      });
 
-    for (let index = 0; index < uids.length; index++) {
-      const events = this.iotaPool[uids[index]];
+      const uids = Object.keys(this.iotaPool);
 
-      if (events.length < this.minSigners) continue;
-      const event = this.iotaPool[uids[index]][0];
+      for (let index = 0; index < uids.length; index++) {
+        const events = this.iotaPool[uids[index]];
 
-      const offChainSignatureId = zeroHash;
+        if (!events || events.length < this.minSigners) continue;
 
-      console.log("Processing ", event, Config.token(event.coin_type));
+        const offChainSignatureId = zeroHash;
 
-      try {
         const hash = await walletClient.writeContract({
           address: Config.moveCall(17_000),
           abi: moveCallAbi,
           functionName: "attestTokenClaim",
           args: [
             offChainSignatureId,
-            event.uid,
-            event.chain_id,
-            Config.token(event.coin_type),
-            event.amount,
-            event.decimals,
-            event.receiver,
+            events[0].uid,
+            events[0].chain_id,
+            Config.token(events[0].coin_type),
+            events[0].amount,
+            events[0].decimals,
+            events[0].receiver,
           ],
         });
 
@@ -198,12 +208,14 @@ class TokenBridge {
           hash,
         });
 
+        console.log("Transaction hash: ", hash);
+
         if (status === "success") {
           delete this.iotaPool[uids[index]];
         }
-      } catch (error) {
-        console.log(error);
       }
+    } catch (error) {
+      console.log(error);
     }
   }
 }
