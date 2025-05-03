@@ -7,5 +7,5 @@
 ## Running a validator's node.
 
 ```
-https://docker.io/devarogundade/movecall-validator:latest
+docker pull devarogundade/movecall-validator
 ```
