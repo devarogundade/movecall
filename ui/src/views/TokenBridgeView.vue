@@ -21,8 +21,8 @@ const approving = ref<boolean>(false);
 const bridging = ref<boolean>(false);
 
 const form = ref({
-    fromChain: chain(17000)!,
-    toChain: chain(0)!,
+    fromChain: chain(0)!,
+    toChain: chain(17000)!,
     token: tokens[0],
     amount: undefined as number | undefined,
     receiver: null as Hex | string | null,
@@ -361,7 +361,7 @@ onMounted(() => {
                                 <div class="bal">
                                     <p>Bal: {{
                                         Converter.toMoney(walletStore.balances[form.token.address[form.fromChain.id]])
-                                    }} {{
+                                        }} {{
                                             form.token.symbol }}
                                     </p>
                                     <a href="https://cloud.google.com/application/web3/faucet/ethereum/holesky"
