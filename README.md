@@ -7,6 +7,14 @@
 #### IOTA
 
 ```move
+
+```
+
+#### EVM
+
+- Sending message.
+
+```solidity
 function sendMessage(
     uint64 toChain,
     bytes32 to,
@@ -14,10 +22,14 @@ function sendMessage(
 ) external payable returns (bytes32 uid);
 ```
 
-#### EVM
+- Receiving message.
 
 ```solidity
-
+function moveCallMessage(
+    uint64 sourceChain,
+    bytes32 from,
+    bytes memory payload
+) external;
 ```
 
 ## Running a validator's node.
