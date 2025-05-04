@@ -29,7 +29,9 @@ function moveCallMessage(
     uint64 sourceChain,
     bytes32 from,
     bytes memory payload
-) external;
+) external override onlyMoveCall {
+    // YOUR LOGIC HERE
+}
 ```
 
 ## Running a validator's node.
