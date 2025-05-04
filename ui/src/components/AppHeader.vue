@@ -64,10 +64,11 @@ onMounted(() => {
                             <button :class="route.name === 'token-bridge' ? 'tab tab_active' : 'tab'">Token
                                 Bridge</button>
                         </RouterLink>
-                        <RouterLink to="/message-bridge">
+                        <a href="https://github.com/devarogundade/movecall?tab=readme-ov-file#building-a-cross-chain-dapp-message-bridge"
+                            target="_blank">
                             <button :class="route.name === 'message-bridge' ? 'tab tab_active' : 'tab'">Message
                                 Bridge</button>
-                        </RouterLink>
+                        </a>
                         <RouterLink to="/stake">
                             <button :class="route.name === 'stake' ? 'tab tab_active' : 'tab'">Stake to
                                 Earn</button>
