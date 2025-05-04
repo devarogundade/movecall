@@ -1,5 +1,16 @@
 # Documentation
 
+MoveCall is an advanced interoperability protocol built on the IOTA blockchain, enabling cross-chain token transfers and arbitrary message passing with high scalability and efficiency. 
+
+MoveCall introduces two core pipelines:
+- **Token Bridge** – for seamless asset transfers between IOTA and other blockchain ecosystems.
+- **Message Bridge** – for sending arbitrary data and commands across chains.
+
+**Security Layer**
+MoveCall is secured through economic staking, where validators must either:
+- Stake native IOTA coins, or
+- Restake IOTA Liquid Staked Tokens (LSTs)
+
 ## Frontend
 
 ```
