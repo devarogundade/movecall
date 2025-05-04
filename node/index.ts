@@ -35,10 +35,12 @@ class Server {
             req.url === "/holesky-message-sent-events" &&
             req.method === "POST"
           ) {
+            messageBridge.addHoleskyEvents(JSON.parse(body));
           } else if (
             req.url === "/iota-message-sent-events" &&
             req.method === "POST"
           ) {
+            messageBridge.addIotaEvents(JSON.parse(body));
           } else {
             res.writeHead(404);
             return res.end(JSON.stringify({ error: "Not found" }));

@@ -1,11 +1,9 @@
 import { IotaClient, getFullnodeUrl } from "@iota/iota-sdk/client";
 import {
-  bytesToHex,
   createPublicClient,
   defineChain,
   http,
   parseAbiItem,
-  toBytes,
   toHex,
 } from "viem";
 import type { Hex, WatchEventReturnType } from "viem";
@@ -45,7 +43,11 @@ interface SignedTokenTransferIOTA extends TokenTransferIOTA {
 }
 
 class TokenBridge {
-  readonly sent: { [key: string]: boolean } = {};
+  private readonly sent: { [key: string]: boolean } = {};
+
+  markAsSent(id: string) {
+    this.sent[id] = true;
+  }
 
   async syncHolesky(
     callback: (events: TokenTransferEVM[]) => void
@@ -95,10 +97,6 @@ class TokenBridge {
         console.log(error);
       },
     });
-  }
-
-  markAsSent(id: string) {
-    this.sent[id] = true;
   }
 
   async callIOTA(callback: (events: TokenTransferIOTA[]) => void) {
