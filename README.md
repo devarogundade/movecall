@@ -1,5 +1,29 @@
 # Documentation
 
+## Frontend
+
+```
+cd ui
+```
+
+```env
+VITE_PROJECT_ID=
+VITE_HOLESKY_EXPLORER_URL=
+VITE_IOTA_EXPLORER_URL=
+VITE_OPENAI_KEY=
+VITE_FS_API_KEY=
+VITE_FS_AUTH_DOMAIN=
+VITE_FS_PROJECT_ID=
+VITE_FS_STORAGE_BUCKET=
+VITE_FS_MSG_SENDER_ID=
+VITE_FS_APP_ID=
+VITE_FS_MEASUREMENT_ID=
+```
+
+```
+npm run dev
+```
+
 ## Using the token bridge.
 
 Visit [https://movecall.netlify.app](https://movecall.netlify.app)
