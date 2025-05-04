@@ -8,7 +8,7 @@ Visit [https://movecall.netlify.app](https://movecall.netlify.app)
 
 ### IOTA (Testnet Chain ID ~ 0)
 
-#### Sending message.
+#### Sending message from IOTA.
 
 ```move
 public entry fun send_message(
@@ -21,7 +21,7 @@ public entry fun send_message(
 ): vector<u8>
 ```
 
-#### Receiving message. (Paused)
+#### Receiving message on IOTA. (Paused)
 
 ```move
 public entry fun move_call_message(
@@ -38,7 +38,7 @@ public entry fun move_call_message(
 
 ### EVM (Holeskey Chain ID ~ 17000)
 
-#### Sending message.
+#### Sending message from EVM.
 
 ```solidity
 function sendMessage(
@@ -48,7 +48,7 @@ function sendMessage(
 ) external payable returns (bytes32 uid);
 ```
 
-#### Receiving message.
+#### Receiving message on EVM.
 
 ```solidity
 function moveCallMessage(
