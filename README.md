@@ -8,6 +8,7 @@
 
 #### Requirements
 
+- Docker.
 - Secret key of the EOA with required staked position.
 
 #### docker-compose.yml
