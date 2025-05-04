@@ -6,8 +6,32 @@
 
 #### IOTA
 
-```move
+- Sending message.
 
+```move
+public entry fun send_message(
+    bridge: &mut MessageBridge,
+    coin_fee: coin::Coin<IOTA>,
+    to_chain: u64,
+    to: vector<u8>,
+    payload: vector<u8>,
+    ctx: &mut TxContext
+): vector<u8>
+```
+
+- Receiving message. (Paused)
+
+```move
+public entry fun move_call_message(
+    _: &MoveCallCap,
+    source_chain: u64,
+    from: vector<u8>,
+    payload: vector<u8>,
+    ...                // Other params
+    ctx: &mut TxContext
+) {
+    // YOUR LOGIC HERE
+}
 ```
 
 #### EVM
