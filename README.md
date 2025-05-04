@@ -6,6 +6,8 @@
 
 ## Running a validator's node.
 
+#### docker-compose.yml
+
 ```yml
 version: "3.8"
 
@@ -20,4 +22,10 @@ services:
       - NODE_URL=
       - SECRET_KEY=
     command: npx nodemon src/index.ts
+```
+
+#### start container
+
+```
+docker compose -f 'validator\docker-compose.yml' up -d --build
 ```
