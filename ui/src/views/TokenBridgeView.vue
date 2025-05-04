@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import ChevronDownIcon from '@/components/icons/ChevronDownIcon.vue';
 import { Converter } from '@/scripts/converter';
 import { tokens, chain, IOTA_COIN } from '@/scripts/constants';
@@ -312,6 +312,11 @@ watch(computed(() => walletStore.holeskyAddress), () => {
     getBalances();
     getApprovals();
 });
+
+onMounted(() => {
+    getBalances();
+    getApprovals();
+});
 </script>
 
 <template>
@@ -356,7 +361,7 @@ watch(computed(() => walletStore.holeskyAddress), () => {
                                 <div class="bal">
                                     <p>Bal: {{
                                         Converter.toMoney(walletStore.balances[form.token.address[form.fromChain.id]])
-                                        }} {{
+                                    }} {{
                                             form.token.symbol }}
                                     </p>
                                     <a href="https://cloud.google.com/application/web3/faucet/ethereum/holesky"
@@ -380,7 +385,17 @@ watch(computed(() => walletStore.holeskyAddress), () => {
                         </div>
 
                         <div class="input2">
-                            <label>Receiver ({{ form.toChain.name }} address)</label>
+                            <label>Receiver ({{ form.toChain.name }} address)
+                                <button v-if="form.fromChain.id === 0 && walletStore.holeskyAddress"
+                                    @click="form.receiver = walletStore.holeskyAddress">
+                                    Use connected wallet
+                                </button>
+
+                                <button v-else-if="form.fromChain.id === 17000 && walletStore.iotaAddress"
+                                    @click="form.receiver = walletStore.iotaAddress">
+                                    Use connected wallet
+                                </button>
+                            </label>
                             <input type="text" placeholder="0x264d28e6e65e...688d81d7804ddd9" v-model="form.receiver" />
                         </div>
                     </div>
@@ -522,6 +537,17 @@ watch(computed(() => walletStore.holeskyAddress), () => {
     flex-direction: column;
     margin-bottom: 40px;
     gap: 10px;
+}
+
+label button {
+    height: 30px;
+    margin-left: 10px;
+    font-size: 16px;
+    background: none;
+    color: var(--primary-light);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
 }
 
 .input2:last-child {

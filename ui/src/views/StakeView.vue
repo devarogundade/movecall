@@ -157,7 +157,11 @@ watch(strategy, () => {
     getShares();
 });
 
-onMounted(() => { });
+onMounted(() => {
+    getBalances();
+    getShares();
+    getWeight();
+});
 </script>
 
 <template>
