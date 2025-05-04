@@ -4,6 +4,22 @@
 
 ## Building a cross-chain dApp (Message bridge).
 
+#### IOTA
+
+```move
+function sendMessage(
+    uint64 toChain,
+    address to,
+    bytes memory payload
+) external payable returns (bytes32 uid);
+```
+
+#### EVM
+
+```solidity
+
+```
+
 ## Running a validator's node.
 
 #### Requirements
