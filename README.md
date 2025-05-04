@@ -6,6 +6,10 @@
 
 ## Running a validator's node.
 
+#### Requirement
+
+- Secret key of the EOA with required staked position.
+
 #### docker-compose.yml
 
 ```yml
