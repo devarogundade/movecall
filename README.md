@@ -7,6 +7,7 @@ MoveCall introduces two core pipelines:
 - **Message Bridge** – for sending arbitrary data and commands across chains.
 
 **Security Layer**
+
 MoveCall is secured through economic staking, where validators must either:
 - Stake native IOTA coins, or
 - Restake IOTA Liquid Staked Tokens (LSTs)
