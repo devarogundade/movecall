@@ -1,6 +1,6 @@
 # Documentation
 
-MoveCall is an advanced interoperability protocol built on the IOTA blockchain, enabling cross-chain token transfers and arbitrary message passing with high scalability and efficiency. 
+MoveCall is an permissionless interoperability protocol built on the IOTA blockchain, enabling cross-chain token transfers and arbitrary message passing with high scalability and efficiency. 
 
 MoveCall introduces two core pipelines:
 - **Token Bridge** – for seamless asset transfers between IOTA and other blockchain ecosystems.
