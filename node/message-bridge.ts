@@ -88,7 +88,7 @@ class MessageBridge {
     //     transaction.moveCall({
     //       target: `${Config.moveCall(0)}::movecall::attest_token_claim`,
     //     });
-    //     transaction.setGasBudget(1_000_000_000 * events.length);
+    //     transaction.setGasBudget(50_000_000 * events.length);
     //     const { digest } = await iotaClient.signAndExecuteTransaction({
     //       transaction,
     //       signer,

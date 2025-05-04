@@ -102,18 +102,14 @@ class TokenBridge {
             transaction.pure(
               bcs.vector(bcs.Address).serialize(events.map((e) => e.signer))
             ),
-            transaction.pure(
-              bcs
-                .vector(bcs.vector(bcs.U8))
-                .serialize(
-                  events.map((e) => new TextEncoder().encode(e.signature))
-                )
-            ),
-            transaction.pure(
-              bcs
-                .vector(bcs.U8)
-                .serialize(new TextEncoder().encode(events[0].uid))
-            ),
+            bcs
+              .vector(bcs.vector(bcs.U8))
+              .serialize(
+                events.map((e) => new TextEncoder().encode(e.signature))
+              ),
+            bcs
+              .vector(bcs.U8)
+              .serialize(new TextEncoder().encode(events[0].uid)),
             transaction.pure.u64(events[0].chainId),
             transaction.pure.u64(events[0].amount),
             transaction.pure.u8(events[0].decimals),
@@ -121,7 +117,7 @@ class TokenBridge {
           ],
           typeArguments: [Config.coinType(events[0].token)],
         });
-        transaction.setGasBudget(1_000_000_000 * events.length);
+        transaction.setGasBudget(500_000_000);
 
         const { digest } = await iotaClient.signAndExecuteTransaction({
           transaction,
