@@ -132,9 +132,9 @@ class TokenBridge {
 
         console.log("Transaction digest, checkpoint: ", digest, checkpoint);
 
-        if (checkpoint) {
-          delete this.holeskyPool[uids[index]];
-        }
+        // if (checkpoint) {
+        delete this.holeskyPool[uids[index]];
+        // }
       }
     } catch (error) {
       console.log(error);
@@ -210,9 +210,9 @@ class TokenBridge {
 
         console.log("Transaction hash: ", hash);
 
-        if (status === "success") {
-          delete this.iotaPool[uids[index]];
-        }
+        // if (status === "success") {
+        delete this.iotaPool[uids[index]];
+        // }
       }
     } catch (error) {
       console.log(error);

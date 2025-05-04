@@ -172,9 +172,9 @@ class MessageBridge {
 
         console.log("Transaction hash: ", hash);
 
-        if (status === "success") {
-          delete this.iotaPool[uids[index]];
-        }
+        // if (status === "success") {
+        delete this.iotaPool[uids[index]];
+        // }
       }
     } catch (error) {
       console.log(error);
