@@ -9,7 +9,7 @@
 ```move
 function sendMessage(
     uint64 toChain,
-    address to,
+    bytes32 to,
     bytes memory payload
 ) external payable returns (bytes32 uid);
 ```
