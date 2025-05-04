@@ -91,6 +91,8 @@ class TokenBridge {
 
         if (!events || events.length < this.minSigners) continue;
 
+        console.log(events);
+
         const transaction = new Transaction();
         transaction.moveCall({
           target: `${Config.moveCall(0)}::movecall::attest_token_claim`,
@@ -102,9 +104,7 @@ class TokenBridge {
             bcs.vector(bcs.Address).serialize(events.map((e) => e.signer)),
             bcs
               .vector(bcs.vector(bcs.U8))
-              .serialize(
-                events.map((e) => new TextEncoder().encode(e.signature))
-              ),
+              .serialize(events.map((e) => Uint8Array.from(e.signature))),
             bcs
               .vector(bcs.U8)
               .serialize(new TextEncoder().encode(events[0].uid)),

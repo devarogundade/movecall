@@ -6,12 +6,10 @@ class EventSigner {
   async sign(uid: Hex): Promise<{ signature: string; signer: string }> {
     const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
-    const { signature } = await signer.signPersonalMessage(
-      new TextEncoder().encode(uid)
-    );
+    const signature = await signer.sign(new TextEncoder().encode(uid));
 
     return {
-      signature,
+      signature: signature.toString(),
       signer: signer.getPublicKey().toIotaAddress(),
     };
   }
