@@ -6,11 +6,18 @@
 
 ## Running a validator's node.
 
-```
-docker pull devarogundade/movecall-validator
-```
+```yml
+version: "3.8"
 
-```env
-NODE_URL="https://movecall.onrender.com"
-SECRET_KEY=""
+services:
+  app:
+    image: devarogundade/movecall-validator:latest
+    container_name: my_validator_node
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_URL=
+      - SECRET_KEY=
+    command: npx nodemon src/index.ts
 ```
