@@ -2,9 +2,9 @@
 
 ## Using the token bridge.
 
-## Building a cross-chain dApp (Message bridge).
-
 Visit [https://movecall.netlify.app](https://movecall.netlify.app)
+
+## Building a cross-chain dApp (Message bridge).
 
 #### IOTA
 
