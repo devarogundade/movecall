@@ -104,7 +104,11 @@ class TokenBridge {
             bcs.vector(bcs.Address).serialize(events.map((e) => e.signer)),
             bcs
               .vector(bcs.vector(bcs.U8))
-              .serialize(events.map((e) => Uint8Array.from(e.signature))),
+              .serialize(
+                events.map((e) =>
+                  Uint8Array.from(e.signature.split(",").map((a) => Number(a)))
+                )
+              ),
             bcs
               .vector(bcs.U8)
               .serialize(new TextEncoder().encode(events[0].uid)),
