@@ -77,22 +77,21 @@ class TokenBridge {
   }
 
   async processHoleskyEvents() {
-    try {
-      const iotaClient = new IotaClient({
-        url: getFullnodeUrl("testnet"),
-      });
+    const iotaClient = new IotaClient({
+      url: getFullnodeUrl("testnet"),
+    });
 
-      const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
+    const signer = Ed25519Keypair.deriveKeypair(Config.secretKey());
 
-      const uids = Object.keys(this.holeskyPool);
+    const uids = Object.keys(this.holeskyPool);
 
-      for (let index = 0; index < uids.length; index++) {
-        const events = this.holeskyPool[uids[index]];
+    for (let index = 0; index < uids.length; index++) {
+      const events = this.holeskyPool[uids[index]];
 
-        if (!events || events.length < this.minSigners) continue;
+      if (!events || events.length < this.minSigners) continue;
 
-        console.log(events);
-
+      console.log(events);
+      try {
         const transaction = new Transaction();
         transaction.moveCall({
           target: `${Config.moveCall(0)}::movecall::attest_token_claim`,
@@ -126,67 +125,69 @@ class TokenBridge {
           signer,
         });
 
-        const { checkpoint } = await iotaClient.waitForTransaction({ digest });
+        const { checkpoint } = await iotaClient.waitForTransaction({
+          digest,
+        });
 
         console.log("Transaction digest, checkpoint: ", digest, checkpoint);
 
         // if (checkpoint) {
-        delete this.holeskyPool[uids[index]];
         // }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+
+      delete this.holeskyPool[uids[index]];
     }
   }
 
   async processIotaEvents() {
-    try {
-      const publicClient = createPublicClient({
-        chain: defineChain({
-          id: 17_000,
-          name: "Holesky",
-          nativeCurrency: {
-            name: "Holesky Ether",
-            symbol: "ETH",
-            decimals: 18,
+    const publicClient = createPublicClient({
+      chain: defineChain({
+        id: 17_000,
+        name: "Holesky",
+        nativeCurrency: {
+          name: "Holesky Ether",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: {
+          default: {
+            http: ["https://rpc.ankr.com/eth_holesky"],
           },
-          rpcUrls: {
-            default: {
-              http: ["https://rpc.ankr.com/eth_holesky"],
-            },
+        },
+      }),
+      transport: http(),
+    });
+
+    const walletClient = createWalletClient({
+      chain: defineChain({
+        id: 17_000,
+        name: "Holesky",
+        nativeCurrency: {
+          name: "Holesky Ether",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: {
+          default: {
+            http: ["https://rpc.ankr.com/eth_holesky"],
           },
-        }),
-        transport: http(),
-      });
+        },
+      }),
+      transport: http(),
+      account: mnemonicToAccount(Config.privateKey()),
+    });
 
-      const walletClient = createWalletClient({
-        chain: defineChain({
-          id: 17_000,
-          name: "Holesky",
-          nativeCurrency: {
-            name: "Holesky Ether",
-            symbol: "ETH",
-            decimals: 18,
-          },
-          rpcUrls: {
-            default: {
-              http: ["https://rpc.ankr.com/eth_holesky"],
-            },
-          },
-        }),
-        transport: http(),
-        account: mnemonicToAccount(Config.privateKey()),
-      });
+    const uids = Object.keys(this.iotaPool);
 
-      const uids = Object.keys(this.iotaPool);
+    for (let index = 0; index < uids.length; index++) {
+      const events = this.iotaPool[uids[index]];
 
-      for (let index = 0; index < uids.length; index++) {
-        const events = this.iotaPool[uids[index]];
+      if (!events || events.length < this.minSigners) continue;
 
-        if (!events || events.length < this.minSigners) continue;
-
-        const offChainSignatureId = zeroHash;
-
+      const offChainSignatureId = zeroHash;
+      try {
         const hash = await walletClient.writeContract({
           address: Config.moveCall(17_000),
           abi: moveCallAbi,
@@ -209,11 +210,12 @@ class TokenBridge {
         console.log("Transaction hash: ", hash);
 
         // if (status === "success") {
-        delete this.iotaPool[uids[index]];
         // }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+
+      delete this.iotaPool[uids[index]];
     }
   }
 }
